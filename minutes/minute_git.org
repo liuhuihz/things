@@ -1,0 +1,21 @@
+
+创建本地仓库
+#+BEGIN_SRC 
+$ git init
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ git clone
+$ git checkout
+
+$ git pull
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ git branch
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ git add
+$ git commit
+#+END_SRC

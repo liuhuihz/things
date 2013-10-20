@@ -1,0 +1,16 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE:	使用 autotools（autohell）
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+
+* Autoconf
+configure.ac （之前的命名 configure.in 已废弃，因为不能从后缀名反映出处理该类文
+件的工具，且易与 config.h.in 混淆）
+可由 autoscan 生成 configure.scan 后修改，亦可由用户自行编写。
+configure.ac 文件的常用宏：
+AC_INIT(/package/, /version/, [ /bug-report/ ], [ /tarname/ ], [ /url/ ])
+* Automake
+
+* Libtool

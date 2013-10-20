@@ -1,0 +1,8 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE: LeTeX 笔记
+#+AUTHOR: 刘晖
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]

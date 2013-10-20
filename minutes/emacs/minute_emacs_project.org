@@ -1,0 +1,70 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Emacs 编程之项目管理
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+Project
+http://www.emacswiki.org/emacs-en/CategoryProject
+在编程的项目管理中我们注重的几个方面是项目中文件管理、分类，搜索，代码
+浏览、编译。
+
+* CEDET
+
+* eproject
+
+https://github.com/jrockway/eproject/wiki 
+加载 eproject 包，在初始化脚本里加入
+#+BEGIN_SRC elisp
+  (require 'eproject)
+  (require 'eproject-extras)
+#+END_SRC
+*Project type*
+eproject 中预定义了一些 project 类型，如 android 、 perl 等，用户可以
+使用 =define-eproject-type= 函数自定义一个 project 类型。
+函数原型为：
+#+BEGIN_SRC elisp
+(define-project-type TYPE SUPERTYPES SELECTOR &rest METADATA)
+#+END_SRC
+|------------+--------------------------------------------------------------------------------------------------------------------------|
+| TYPE       | 类型名称。                                                                                                               |
+| SUPERTYPES | 类型继承的超类。超类的属性也将被继承。                                                                                   |
+| SELECTOR   | is a form that is given a filename FILE and returns the project root if it is of this type of project, or NIL otherwise. |
+| METADATA   | 可选参数，一个元数据列表,定义了该类型的属性。                                                                            |
+|------------+--------------------------------------------------------------------------------------------------------------------------|
+
+下面是预定义的 android 类型：
+#+BEGIN_SRC elisp
+  ;; Android project
+  (define-project-type android (generic)
+    (and (look-for "AndroidManifest.xml")
+         (look-for "project.properties"))
+    :main-file "AndroidManifest.xml")
+  
+  (define-project-type c/c++ (generic)
+    (or (look-for "Makefile")
+        (look-for "configure"))
+    :main-file "main.cpp"
+    :relevant-files ("\\.c$" "\\.cc$" "\\.h$" "\\.cpp$" "\\.hpp$" "\\.cxx$" "\\.hxx$")
+    :irrelevant-files ("*.o" "*.a"))
+#+END_SRC
+
+*Project root*
+
+更详细的说明可以参考 eproject 的项目主页或者 eproject.el 内的注释。
+* Emacs-IDE
