@@ -1,0 +1,30 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE: Org 笔记
+#+AUTHOR: 刘晖
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+
+* org 介绍
+
+* 定制（ customization ）
+有超过 180 个变量可以用来定制 Org ，可以通过 M-x org-customize 或者菜单 Org ->
+Customization -> Browse Org Group 来查看关于这些变量的结构化概述。其中很多设置也
+可以基于文件为基础来激活，这需要在文件缓冲区中加入特殊的行，这种方式叫缓冲内设置
+（ In-buffer settings ）。
+
+* 一些
+** 如何设置在打开 org 文件的时候的可见等级
+org 文件默认的可见级别是 overview ，也就是说只有最上层的标题（ headline ）可见。
+可以通过设置变量 org-startup-folded 来修改默认行为。
+也可以在文件级别控制，在文件中加入下面任何一行。
+#+BEGIN_SRC org
+\#+STARTUP: overview
+\#+STARTUP: content
+\#+STARTUP: showall
+\#+STARTUP: showeverything
+#+END_SRC
+进一步，任何条目可以使用 ‘VISIBILITY’ 属性来控制它的可见级别，允许的设置为
+folded ， children ， content 和 all 。

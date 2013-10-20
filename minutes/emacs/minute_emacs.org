@@ -1,0 +1,27 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE: 使用 Emacs
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+
+* 术语
+window
+buffer
+frame
+prefix arg
+* Shell
+M-! cmd <RET> 或者 M-x shell-command
+运行 cmd ，输出显示到 \*Shell Command Output\* 缓冲区。
+
+M-| cmd <RET> 或者 M-x shell-command-on-region
+运行 cmd ，以当前 buffer 选区内容作为输入，
+
+M-& cmd <RET> 或者 M-x async-shell-command
+异步运行 cmd ，输出显示到 \*Async Shell Command\* 缓冲区。
+
+M-x shell
+
+M-x term
+
+M-x eshell

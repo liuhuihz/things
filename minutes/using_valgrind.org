@@ -1,0 +1,78 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE:	使用 Valgrind
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+
+* 概述
+Valgrind 是一个构造动态分析工具（相对于静态代码分析工具）的测试工具框架。这些
+Valgrind 工具能自动检测许多内存管理和线程的问题，并详细地剖析您的程序。您也可以使用
+Valgrind 来构造新的工具。
+Valgrind 工具集合提供许多调试（ debugging ）和剖析（ profiling ）工具，帮助开发者加速并修正程序。其中最流行是
+称为 Memcheck 的工具。它能检测很多普遍存在于 C 和 C++ 程序中的内存相关的错误，这
+些错误可能导致程序崩溃和一些非预期的行为。
+* 基本原理
+profiler 工具
+* 使用
+[[http://valgrind.org/][Valgrind 官方网站]]
+
+#+begin_src shell
+$ tar zxf valgrind-x.y.z.tar.gz
+$ cd valgrind-x.y.z
+$ ./configure
+$ make && make install
+#+end_src
+
+#+begin_quote
+valgrind --tool=<tool-name> <program> <args>
+#+end_quote
+
+可用的 tool-name 有 memcheck （缺省）， cachegrind ， callgrind 。
+可视化的图形辅助工具 kcachegrind
+
+#+begin_src c -n
+############ test_valgrind.c ############
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.>
+
+void* mymalloc(size_t sz)
+{
+        return malloc(sz);
+}
+
+void myfree(void* ptr)
+{
+        return free(ptr);
+}
+
+int main(int argc, char** argv)
+{
+        return 0;
+}
+
+#+end_src
+
+#+begin_src shell
+$ gcc -g -o test_valgrind test_valgrind.c
+#+end_src
+* 术语
+L1 一级缓存
+Branch prediction 分支预测
+Caller 调用者，在调用栈中，上层栈为下层的调用者。
+Callee 被调用者，在调用栈中，下层栈为上层栈的被调用者。
+Distance 调用距离，在调用栈中，两个函数之间的距离。
+Timing 计时， CPU 使用计时，在每一个采样点，查看程序调用栈，计算在函数内的 CPU
+时间，采样间隔越短，计时越精确。
+Inclusive 函数的所有花销，包括所有它调用的函数。
+Self 函数自身花销（包括其中展开的内联函数）
+* 工具集
+** Memcheck
+** Cachegrind
+** Callgrind
+
+#+begin_src shell
+$ valgrind --callgrind ./test_valgrind
+#+end_src
+
