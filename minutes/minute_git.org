@@ -1,21 +1,69 @@
+集中式版本系统
+如 Subversion（SVN） 、 Concurrent Versions System（CVS）
+C/S 模式
+
+分布式版本系统
+如 GIT 、 Mercurial
+Distributed 模式或者 Peer-Peer 模式
+
+快照（snapshot）与差异集（changeset）
+
+SHA-1 对象标识
+
+四种对象类型
+blob
+tree
+commit
+tag
+
+远程仓库
+本地仓库
+暂存区（Staged，Index）
+工作目录
+裸仓库
+git 目录
 
 创建本地仓库
-#+BEGIN_SRC 
+#+BEGIN_SRC shell
 $ git init
 #+END_SRC
 
+克隆远程仓库
 #+BEGIN_SRC shell
 $ git clone
-$ git checkout
+#+END_SRC
 
+检出分支
+#+BEGIN_SRC shell
+$ git checkout
+#+END_SRC
+
+同步远程仓库到本地仓库，合并到工作目录。
+#+BEGIN_SRC shell
 $ git pull
 #+END_SRC
 
+同步远程仓库到本地仓库，不合并到工作目录。
+#+BEGIN_SRC shell
+$ git fetch
+#+END_SRC
+
+建立分支
 #+BEGIN_SRC shell
 $ git branch
 #+END_SRC
 
+将修改到本地暂存区（ Staged ）
 #+BEGIN_SRC shell
 $ git add
+#+END_SRC
+
+提交缓存区至本地仓库
+#+BEGIN_SRC shell
 $ git commit
+#+END_SRC
+
+同步本地仓库至远程仓库
+#+BEGIN_SRC shell
+$ git push
 #+END_SRC
