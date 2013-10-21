@@ -1,0 +1,137 @@
+# user
+set realname = "Hui Liu"
+
+# folder & spool
+set spoolfile = ~/Mail/inbox/abc.com
+set folder = ~/Mail
+set tmpdir = ~/.mutt/tmp
+
+set mbox_type = Maildir
+set mbox = +inbox
+set record = +sent
+set postponed = +postponed
+
+set move = no
+
+# 监视下面几个邮箱，报告新邮件
+mailboxes "=inbox"
+
+set check_new = yes
+
+# 设置区域及字符集
+set locale = zh_CN.UTF-8
+set charset = utf8
+
+# hook charset
+charset-hook gb2312 gb2312
+charset-hook GB2312 GB2312
+charset-hook big5 big5
+charset-hook "^us-ascii$" "utf-8"
+# 设置所有非 utf-8 编码的邮件编码为 gb2312
+charset-hook !UTF-8 gbk
+
+#Flag
+# " "(空): 表示这封邮件不是给你的, 也就是说 To: 和 Cc: Bcc: 都没有你的地址,
+#          很多转发的邮件, 未确认的邮件列表邮件, 垃圾邮件都有这个特征.
+# +: 表示你是收件人(To: 是你的地址之一), 而且是唯一的收件人.
+# T: 表示你是收件人(To: 包括了你的地址之一), 但是你不是唯一的收件人. 这是一封群体信件.
+# C: 表示你的地址出现在 CC:, 但是你不是唯一的被抄送的人.
+# F: 表示这封邮件是你发出去的.
+# L: 表示这是一封你已经加入的邮件列表寄来的.
+set to_chars=" +TCFL"
+
+# index 列表显示格式
+#set index_format = "%4C %Z %{%b %d} %-15.15L (%4l) %s"
+#set index_format = "%5C %Z %{%y年%b%d}   %-20.20L (%?l?%4l&%4c?) %s"
+set index_format = "%5C %Z  %{%m-%d %H:%M} %-20.20L (%?l?%4l&%4c?) %s"
+
+# threads 方式显示时，是否使用 ascii 显示树状结构
+#set ascii_chars = yes
+
+# 设置邮件排序方式
+set sort = reverse-date
+set sort_aux = threads
+
+# 当行太长需要折行显示时, 按单词为边界折行, 而不是以屏幕边界为界限.
+set smart_wrap = yes
+
+# 当你在用 pager 看信件时, 在 index 留出多少行显示邮件列表
+set pager_index_lines = 15
+
+# 翻页保留前一页 2 行
+set pager_context = 2
+
+# 如果翻到最后，再按往下翻也不会翻到下一封信件
+set pager_stop
+
+# ext app to view attachment
+#set mailcap_path = ~/.mailcap
+
+# 让mutt可以更好的阅读html邮件
+auto_view text/html
+
+# Colors
+# color  obj         front           back
+# ----- ------------ --------------- ---------
+# color hdrdefault   black           cyan     # 邮件头颜色
+# color quoted       blue            white    # 引文颜色
+# color signature    brightblack     white
+ color indicator    brightwhite     magenta
+ color attachment   black           green
+# color error        red             white
+# color message      blue            white
+ color search       black           brightyellow
+ color status       brightyellow    blue
+# color tree         red             white # thread 左边的树形指示
+# color normal       blue            white
+ color tilde        green           white
+# color bold         brightyellow    white
+# color markers      red             white
+ color index        brightwhite     red ~N
+ color index        red             default ~O
+ color index        brightblack     default ~D
+ mono  bold         bold
+ mono  underline    underline
+ mono  indicator    reverse
+
+#
+set editor = "emacs-snapshot -nw --no-site-file --debug-init"
+#set editor = "emacsclient.emacs-snapshot"
+
+# 回复邮件时是否引用原文
+set include = yes
+
+# 回复邮件时引用原文是否加入原文的邮件头
+set header = yes
+
+# 设置邮件发送程序
+set sendmail = /usr/bin/msmtp
+
+# 快速回复, 不用确认回复地址和主题
+set fast_reply = yes
+
+# 默认的发信人
+set from = hliu@abc.com
+
+# mutt自动生成 from 地址
+set use_from = yes
+
+# 尽量使用原信中的 reply-to, 对邮件列表尤其适用
+set reply_to = yes
+
+# 用哪个邮箱收的信, 就用哪个邮箱回信
+set reverse_name = yes
+
+# 设置邮件发送者
+set envelope_from = yes
+
+#my_hdr From: Liu Hui<hliu@abc.com>
+#my_hdr Reply-To: Liu Hui<hliu@abc.com>
+
+# 设置发送邮件的字符编码
+set send_charset="us-ascii:iso-8859-1:gb2312:utf-8"
+
+#
+macro index G "!getmails -n\n" "Receive mail"
+macro pager G "!getmails -n\n" "Receive mail"
+
