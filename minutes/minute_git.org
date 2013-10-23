@@ -1,3 +1,25 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	GIT
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* 简介
 集中式版本系统
 如 Subversion（SVN） 、 Concurrent Versions System（CVS）
 C/S 模式
@@ -10,18 +32,22 @@ Distributed 模式或者 Peer-Peer 模式
 
 SHA-1 对象标识
 
+* 对象
 四种对象类型
 blob
 tree
 commit
 tag
 
+* 结构
 远程仓库
 本地仓库
 暂存区（Staged，Index）
 工作目录
 裸仓库
 git 目录
+
+* 基本操作
 
 创建本地仓库
 #+BEGIN_SRC shell
@@ -33,9 +59,24 @@ $ git init
 $ git clone
 #+END_SRC
 
+新建分支
+#+BEGIN_SRC shell
+$ git branch
+#+END_SRC
+
 检出分支
 #+BEGIN_SRC shell
 $ git checkout
+#+END_SRC
+
+将修改添加到本地暂存区（ Staged ）
+#+BEGIN_SRC shell
+$ git add
+#+END_SRC
+
+提交本地缓存区至本地仓库
+#+BEGIN_SRC shell
+$ git commit
 #+END_SRC
 
 同步远程仓库到本地仓库，合并到工作目录。
@@ -48,22 +89,10 @@ $ git pull
 $ git fetch
 #+END_SRC
 
-建立分支
-#+BEGIN_SRC shell
-$ git branch
-#+END_SRC
-
-将修改到本地暂存区（ Staged ）
-#+BEGIN_SRC shell
-$ git add
-#+END_SRC
-
-提交缓存区至本地仓库
-#+BEGIN_SRC shell
-$ git commit
-#+END_SRC
-
 同步本地仓库至远程仓库
 #+BEGIN_SRC shell
 $ git push
 #+END_SRC
+
+* 分支、分支、分支
+* 合并（merge）与衍合（rebase）
