@@ -1,0 +1,177 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Emacs 之字体
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* 字体表示方式
+Emacs 中字体表示方式有 4 种
+- Fontconfig 模式（pattern）
+  =fontname[-fontsize][:name1=values1][:name2=values2]...=
+  例子：
+  #+BEGIN_QUOTE
+  =Monospace=
+  =Monospace-12=
+  =Monospace-12:bold=
+  =DejaVu Sans Mono:bold:italic=
+  =Monospace-12:weight=bold:slant=italic=
+  #+END_QUOTE
+- GTK font 模式（pattern）
+  =fontname [properties] [fontsize]=
+  例子：
+  #+BEGIN_QUOTE
+  =Monospace 12=
+  =Monospace Bold Italic 12=
+  #+END_QUOTE
+- XLFD（X logical font description）
+  #+BEGIN_QUOTE
+  =-maker-family-weight-slant-widthtype-style-pixels-height-horiz-vert-spacing-width-registry-encoding=
+  #+END_QUOTE
+- 字体昵称（nickname）
+  比如 '6x13' 等价于
+  #+BEGIN_QUOTE
+  =-misc-fixed-medium-r-semicondensed--13-*-*-*-c-60-iso8859-1=
+  #+END_QUOTE
+* 字体集（fontset）与字符集（charset）
+字符集（charset， character set）
+M-x list-character-sets
+M-x list-charset-chars
+M-x describe-character-set
+Emacs 使用的字体集：
+- fontset-standard
+  #+BEGIN_QUOTE
+  =-*-fixed-medium-r-normal-*-16-*-*-*-*-*-fontset-standard=
+  #+END_QUOTE
+  Emacs 启动时根据变量 standard-fontset-spec / ns-standard-fontset-spec
+  （GNUstep 和 Mac OS X 平台） / w32-standard-fontset-spec （MS Windows 平台）的值自动创建。
+- fontset-startup
+  Emacs 启动时基于 ‘Font’ 资源设置、 ‘-fn’/‘--font’ 参数或者系统缺省字体自动创建。
+  字体集名称将上面找到的字体里的字符注册名替换为 fontset ，将字符编码替换为
+  startup 。比如，如果通过以下命令启动 emacs ：
+  #+BEGIN_SRC shell
+  $ emacs -fn "*courier-medium-r-normal--14-140-*-iso8859-1"
+  #+END_SRC
+  emacs 将生成如下字体集并在初始化窗口使用：
+  #+BEGIN_QUOTE
+  =-*-courier-medium-r-normal-*-14-140-*-*-*-*-fontset-startup=
+  #+END_QUOTE
+- fontset-default
+* 字体设置及相关函数/变量
+- set-default-font （< 23.1)
+  #+BEGIN_SRC lisp
+  (set-default-font “Terminus-9”)
+  #+END_SRC
+- set-frame-font (>= 23.1)
+  #+BEGIN_SRC lisp
+  (set-frame-font  FONT  nil t)
+  #+END_SRC
+- set-frame-attribute
+  #+BEGIN_SRC lisp
+  (set-frame-attribute 'default t :font  FONT ))
+  #+END_SRC
+  #+BEGIN_SRC lisp
+  (set-frame-attribute 'default nil :font  FONT ))
+  #+END_SRC
+- default-frame-alist
+  #+BEGIN_SRC lisp
+(add-to-list 'default-frame-alist '(font . "Monospace-10"))
+  #+END_SRC
+- set-face-font
+  #+BEGIN_SRC lisp
+  ;; Use the predefined fontset "fontset-standard"
+    (set-face-font 'default "fontset-standard")
+  #+END_SRC
+- set-face-attribute
+- create-fontset-from-fontset-spec
+  #+BEGIN_SRC lisp
+    (create-fontset-from-fontset-spec
+     "-apple-monaco-medium-r-normal--14-*-*-*-*-*-fontset-monaco,
+      ascii:-apple-monaco-medium-r-normal--14-140-75-75-m-140-mac-roman,
+      latin-iso8859-1:-apple-monaco-medium-r-normal--14-140-75-75-m-140-mac-roman")
+  #+END_SRC
+- set-fontset-font
+  #+BEGIN_SRC lisp
+    ;; In "fontset-standard" use "misc fixed" for the charset
+    ;; `mule-unicode-0100-24ff'
+    (set-fontset-font "fontset-standard"
+                      'mule-unicode-0100-24ff
+                      "-*-fixed-medium-r-*-*-11-*-*-*-*-*-iso10646-1")
+    
+    ;; "Greek extended"  U+1F00 - U+1FFF
+    (set-fontset-font "fontset-standard"
+                      (cons (decode-char 'ucs #x1f00)
+                            (decode-char 'ucs #x1fff))
+                      "-*-palatino linotype-*-*-r-*-14-*-*-*-*-*-iso10646-1")
+    
+    ;; "Devanagari"  U+0900 - U+1097F
+    (set-fontset-font "fontset-default"
+                      (cons (decode-char 'ucs #x0900)
+                            (decode-char 'ucs #x097f))
+                      "Siddhanta")
+    
+    
+    ;; Use Liberation Mono for latin-3 charset.
+    (set-fontset-font "fontset-default" 'iso-8859-3
+                      "Liberation Mono")
+    
+    ;; Prefer a big5 font for han characters
+    (set-fontset-font "fontset-default"
+                      'han (font-spec :registry "big5")
+                      nil 'prepend)
+    
+    ;; Use DejaVu Sans Mono as a fallback in fontset-startup
+    ;; before resorting to fontset-default.
+    (set-fontset-font "fontset-startup" nil "DejaVu Sans Mono"
+                      nil 'append)
+    
+    ;; Use MyPrivateFont for the Unicode private use area.
+    (set-fontset-font "fontset-default"  '(#xe000 . #xf8ff)
+                      "MyPrivateFont")
+  #+END_SRC
+- face-font-rescale-alist
+  #+BEGIN_SRC lisp
+    (setq face-font-rescale-alist
+          '(
+            (".*Lohit Devanagari.*" . 1.1)
+            (".*Siddhanta.*" . 1.15)
+            (".*GentiumAlt.*" . 1.2)
+            (".*Ubuntu Mono.*" . 1.2)
+            ))
+  #+END_SRC
+- custom-set-faces
+
+* 附录
+** XLFD（X logical font description）
+[[http://en.wikipedia.org/wiki/X_logical_font_description][XLFD]] 是 X window system 使用的字体标准，下面是一个字体的定义：
+-bitstream-charter-medium-r-normal--12-120-75-75-p-68-iso8859-1
+共包括 14 个字段，定义如下：
+1) FOUNDRY: 字体制造商或提供者 Type foundry - vendor or supplier of this font
+2) FAMILY_NAME: 字体家族（Typeface family）
+3) WEIGHT_NAME: 字体权重（Weight of type）
+4) SLANT: 字体的总体姿态 Slant (upright, italic, oblique, reverse italic, reverse oblique, or "other")
+5) SETWIDTH_NAME: Proportionate width (e.g. normal, condensed, narrow, expanded/double-wide)
+6) ADD_STYLE_NAME: Additional style (e.g. (Sans) Serif, Informal, Decorated)
+7) PIXEL_SIZE: 字符大小（像素单位） Size of characters, in pixels; 0 (Zero) means a scalable font
+8) POINT_SIZE: 字符大小（1/10点距单位） Size of characters, in tenths of points
+9) RESOLUTION_X: 水平解析度（DPI） Horizontal resolution in dots per inch (DPI), for which the font was designed
+10) RESOLUTION_Y: 垂直解析度（DPI） Vertical resolution, in DPI
+11) SPACING: 等宽（monospaced）, 比例（proportional）, or "character cell"
+12) AVERAGE_WIDTH: 字符平均宽度；0 表示字体 Average width of characters of this font; 0 means scalable font
+13) CHARSET_REGISTRY: 字符集 Registry defining this character set
+14) CHARSET_ENCODING: 字符编码 Registry's character encoding scheme for this set
+** Linux 下核心字体和 XFT 字体
