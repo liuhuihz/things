@@ -1,6 +1,13 @@
+.. -*- coding: utf-8 -*-
+
 ==============================
 Python 语言学习笔记
 ==============================
+
+:Authors: 刘晖 <liuhui.hz@gmail.com>
+:Version: V1.0
+
+.. contents:: 目录
 
 概述
 ==============================
@@ -33,45 +40,14 @@ Python 语言学习笔记
 | yield    |        |         |       |       |
 +----------+--------+---------+-------+-------+
 
-变量定义
+类型
 ------------------------------
 
-控制语句
-------------------------------
-* if 语句
-
-  .. code-block:: python
-                  :linenos:
-
-    if a > 0 and b > 0:
-      print a - b
-    elif a < 0 and b < 0:
-      print b - a
-    else:
-      print a + b
-
-* for 语句
-  迭代序列中的元素（列表或者字符串）
-
-  .. code-block:: python
-                  :linenos:
-
-    a = [ 'cat', 'window', 'defenestrate' ]
-    for x in a:
-      print x, len(x)
-
-* while 语句
-
-  .. code-block:: python
-                  :linenos:
-
-    a, b = 0, 1
-    while b < 10:
-      print b,
-      a, b = b, a + b
-
+基础类型
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 数据结构
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 列表（list）
 语法：[ "abc", 123, [ 'a', '1' ], 3.7 ]
 与 Haskell 中的列表不同， Python 中的列表允许不同类型的元素，是否因为 Python 是动态类型语言，而 Haskell 是静态类型语言导致如此设计？
@@ -83,5 +59,70 @@ Python 语言学习笔记
 
 字典（dictionary）
 
-函数定义
-def
+
+变量定义
+------------------------------
+
+流程控制语句
+------------------------------
+1. if 语句
+
+  .. code:: python
+
+    if a > 0 and b > 0:
+      print a - b
+    elif a < 0 and b < 0:
+      print b - a
+    else:
+      print a + b
+
+2. for 语句
+
+  迭代序列中的元素（列表或者字符串）
+
+  .. code-block:: python
+                  :linenos:
+
+    a = [ 'cat', 'window', 'defenestrate' ]
+    for x in a:
+      print x, len(x)
+
+3. while 语句
+
+  .. code-block:: python
+                  :linenos:
+
+    a, b = 0, 1
+    while b < 10:
+      print b,
+      a, b = b, a + b
+
+4. break, continue 和 else 在循环结构中的使用
+
+  .. code-block:: python
+
+    for n in range(2, 10):
+      for x in range(2, n):
+        if n % x == 0:
+          print n, 'equals', x, '*', n / x
+          break
+      else:
+        # loop fell through without finding a factor
+        print n, 'is a prime number'
+
+
+函数
+------------------------------
+
+定义
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+  def fib(n): # write Fibonacci series up to n
+    """Print a Fibonacci series up to n."""
+    a, b = 0, 1
+    while a < n:
+      print a,
+      a, b = b, a + b
+
