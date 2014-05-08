@@ -69,6 +69,37 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 语法：[ "abc", 123, [ 'a', '1' ], 3.7 ]
 与 Haskell 中的列表不同， Python 中的列表允许不同类型的元素，是否因为 Python 是动态类型语言，而 Haskell 是静态类型语言导致如此设计？
 
+列表推导（List comprehensions）
+列表推导由
+
+.. code-block:: python
+
+   squares = [ x ** 2 for x in range(10) ]
+
+等价于
+
+.. code-block:: python
+
+   squares = []
+   for x in range(10):
+     squares.append(x ** 2)
+
+再一个
+
+.. code-block:: python
+
+   combs = [(x, y) for x in [1, 2, 3] for y in [3, 1, 4] if x != y]
+
+等价于
+
+.. code-block:: python
+
+   combs = []
+   for x in [1, 2, 3]:
+     for y in [3, 1, 4]:
+       if x != y:
+         combs.append((x, y))
+
 元组（tuple）
 语法： ( "abc", 123 )
 
@@ -84,7 +115,7 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 ------------------------------
 1. 算术运算符
 
-   +, -, *, /, %
+   +, -, *, **, /, //, %
 
 2. 比较运算符
 
@@ -98,6 +129,11 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 ------------------------------
 1. if 语句
 
+  BNF:
+    if_stmt ::= "if" expression ":" suite
+                ( "elif" expression ":" suite )*
+                [ "else" ":" suite ]
+
   .. code:: python
 
     if a > 0 and b > 0:
@@ -109,6 +145,10 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 
 2. for 语句
 
+  BNF:
+    for_stmt ::= "for" target_list "in" expression_list ":" suite
+                 [ "else" ":" suite ]
+
   迭代序列中的元素（列表或者字符串）
 
   .. code-block:: python
@@ -119,6 +159,10 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
       print x, len(x)
 
 3. while 语句
+
+  BNF:
+    while_stmt ::= "while" expression ":" suite
+                   [ "else" ":" suite ]
 
   .. code-block:: python
                   :linenos:
@@ -165,6 +209,9 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 *name 参数及 **name 参数
 
 lambda 函数
+
+BNF:
+  lambda_form ::= "lambda" [parameter_list]: expression
 
 类
 ------------------------------
