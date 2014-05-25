@@ -103,17 +103,20 @@ Initialize
 --------------------------------------------------
 
 .. code:: shell
+
   $ . build/envsetup.sh
 
 or
 
 .. code:: shell
+
   $ source build/envsetup.sh
 
 Choose a Target
 --------------------------------------------------
 
 .. code:: shell
+
   $ lunch aosp_arm-eng
 
 All build targets take the form BUILD-BUILDTYPE, where the BUILD is a codename referring to the particular feature combination.
