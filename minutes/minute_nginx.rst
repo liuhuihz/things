@@ -1,14 +1,75 @@
-Welcome to Nginx's documentation!
+.. -*- coding: utf-8 -*-
+
+=================================
+Nginx 源代码学习笔记
 =================================
 
-Contents:
+:Authors: 刘晖 <liuhui.hz@gmail.com>
+:Version: V1.0
 
-.. toctree::
-   :maxdepth: 2
+.. contents:: 目录
 
+描述
+=================================
+
+源代码目录结构
+=================================
+
+nginx
+├── auto
+│   ├── cc
+│   ├── lib
+│   │   ├── geoip
+│   │   ├── google-perftools
+│   │   ├── libatomic
+│   │   ├── libgd
+│   │   ├── libxslt
+│   │   ├── md5
+│   │   ├── openssl
+│   │   ├── pcre
+│   │   ├── perl
+│   │   ├── sha1
+│   │   └── zlib
+│   ├── os
+│   └── types
+├── conf
+├── contrib
+│   ├── unicode2nginx
+│   └── vim
+│       ├── ftdetect
+│       ├── indent
+│       └── syntax
+├── docs
+│   ├── dtd
+│   ├── html
+│   ├── man
+│   ├── text
+│   ├── xml
+│   │   └── nginx
+│   ├── xsls
+│   └── xslt
+├── misc
+└── src
+    ├── core
+    ├── event
+    │   └── modules
+    ├── http
+    │   └── modules
+    │       └── perl
+    ├── mail
+    ├── misc
+    ├── mysql
+    └── os
+        ├── unix
+        └── win32
+
+
+
+数据结构
+=================================
 
 内存池 （ ngx_pool_t ）
-----------------------------
+---------------------------------
 | src/core/ngx_palloc.h
 | src/core/ngx_palloc.c
 
@@ -82,7 +143,7 @@ Contents:
 
 
 数组 （ ngx_array_t ）
-----------------------------
+---------------------------------
 | src/core/ngx_array.h
 | src/core/ngx_array.c
 
@@ -94,11 +155,4 @@ Contents:
 | 从数组对象中取出一个元素，如数组满了，则在内存池中扩展（内存池中剩余空间足够）
 或重新分配更大（两倍于当前的元素数目）的数组。
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
