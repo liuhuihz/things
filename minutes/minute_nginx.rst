@@ -12,56 +12,59 @@ Nginx 源代码学习笔记
 描述
 =================================
 
+
 源代码目录结构
 =================================
 
-nginx
-├── auto
-│   ├── cc
-│   ├── lib
-│   │   ├── geoip
-│   │   ├── google-perftools
-│   │   ├── libatomic
-│   │   ├── libgd
-│   │   ├── libxslt
-│   │   ├── md5
-│   │   ├── openssl
-│   │   ├── pcre
-│   │   ├── perl
-│   │   ├── sha1
-│   │   └── zlib
-│   ├── os
-│   └── types
-├── conf
-├── contrib
-│   ├── unicode2nginx
-│   └── vim
-│       ├── ftdetect
-│       ├── indent
-│       └── syntax
-├── docs
-│   ├── dtd
-│   ├── html
-│   ├── man
-│   ├── text
-│   ├── xml
-│   │   └── nginx
-│   ├── xsls
-│   └── xslt
-├── misc
-└── src
-    ├── core
-    ├── event
-    │   └── modules
-    ├── http
-    │   └── modules
-    │       └── perl
-    ├── mail
-    ├── misc
-    ├── mysql
-    └── os
-        ├── unix
-        └── win32
+::
+
+  nginx
+  ├── auto
+  │   ├── cc
+  │   ├── lib
+  │   │   ├── geoip
+  │   │   ├── google-perftools
+  │   │   ├── libatomic
+  │   │   ├── libgd
+  │   │   ├── libxslt
+  │   │   ├── md5
+  │   │   ├── openssl
+  │   │   ├── pcre
+  │   │   ├── perl
+  │   │   ├── sha1
+  │   │   └── zlib
+  │   ├── os
+  │   └── types
+  ├── conf
+  ├── contrib
+  │   ├── unicode2nginx
+  │   └── vim
+  │       ├── ftdetect
+  │       ├── indent
+  │       └── syntax
+  ├── docs
+  │   ├── dtd
+  │   ├── html
+  │   ├── man
+  │   ├── text
+  │   ├── xml
+  │   │   └── nginx
+  │   ├── xsls
+  │   └── xslt
+  ├── misc
+  └── src
+      ├── core
+      ├── event
+      │   └── modules
+      ├── http
+      │   └── modules
+      │       └── perl
+      ├── mail
+      ├── misc
+      ├── mysql
+      └── os
+          ├── unix
+          └── win32
 
 
 
