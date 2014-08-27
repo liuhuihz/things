@@ -125,6 +125,10 @@ Python 没有单独的字符类型，字符就是长度为 1 的字符串。
 
    not, and, or
 
+4. 移位操作符
+
+   <<, >>
+
 流程控制语句
 ------------------------------
 1. if 语句
@@ -233,3 +237,74 @@ BNF:
 
 模块
 ------------------------------
+
+字符串
+------------------------------
+python 中的字符串
+python 中的 unicode 字符串使用 u 前缀。它的字节序列表示不是任何一种特定的 UTF 编码。
+比如 ASCII 字符并不用 UCS2 的两字节或者 UCS4 的四字节（填充 00 字节），而是 UTF-8 的单字节表示；而中文却是用 UCS （ UTF-16 编码）的方式。
+这正好与它是字符的 list 而不是单纯的字节序列的特性契合。
+
+.. code-block:: python
+
+   str_unicode          = u'1中文1'
+   str_utf8             = str_unicode.encode('utf-8')
+   str_utf16            = str_unicode.encode('utf-16')
+   str_utf32            = str_unicode.encode('utf-32')
+   str_unicode_internal = str_unicode.encode('unicode_internal')
+
+   # u'1\u4e2d\u65871'
+   print repr(str_unicode)
+
+   # 31 4e2d 6587 31
+   print " ".join("{:02x}".format(ord(c)) for c in str_unicode)
+
+   # '1\xe4\xb8\xad\xe6\x96\x871'
+   print repr(str_utf8)
+
+   # 31 e4 b8 ad e6 96 87 31
+   print " ".join("{:02x}".format(ord(c)) for c in str_utf8)
+
+   # ff fe 31 00 2d 4e 87 65 31 00
+   print " ".join("{:02x}".format(ord(c)) for c in str_utf16)
+
+   # ff fe 00 00 31 00 00 00 2d 4e 00 00 87 65 00 00 31 00 00 00
+   print " ".join("{:02x}".format(ord(c)) for c in str_utf32)
+
+   # 31 00 2d 4e 87 65 31 00
+   print " ".join("{:02x}".format(ord(c)) for c in str_unicode_internal)
+
+
+print 语句和环境 locale 设置有关。 print 输出时会根据当前的 locale 设置对 unicode 字符串编码然后输出。如果编码失败，则 print 语句也执行失败。
+比如
+
+.. code-block:: python
+
+   $ locale
+   LANG=
+   LC_COLLATE="C"
+   LC_CTYPE="C"
+   LC_MESSAGES="C"
+   LC_MONETARY="C"
+   LC_NUMERIC="C"
+   LC_TIME="C"
+   LC_ALL=
+
+   $ python
+   Python 2.7.8 (default, Jul 14 2014, 12:48:12)
+   [GCC 4.2.1 Compatible Apple LLVM 5.1 (clang-503.0.40)] on darwin
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>> a = u'1中文1'
+   a = u'1中文1'
+   >>> print a
+   print a
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   UnicodeEncodeError: 'ascii' codec can't encode characters in position 1-6: ordinal not in range(128)
+   >>> print " ".join("{:02x}".format(ord(c)) for c in a)
+   print " ".join("{:02x}".format(ord(c)) for c in a)
+   31 e4 b8 ad e6 96 87 31
+   >>> print repr(a)
+   print repr(a)
+   u'1\xe4\xb8\xad\xe6\x96\x871'
+   >>>
