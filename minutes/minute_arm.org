@@ -1,0 +1,40 @@
+
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	ARM
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+
+* Link Register(LR)
+在很多指令集架构（PowerPC、ARM 和 PA-RISC）的一个特殊的寄存器，用于保存函数调用
+返回地址。其他架构（比如 SPARC），有个同样作用的寄存器，但是名字不同（在这种情况
+下，“output register 7” 或者 o7）。LR 的使用使得叶子子程序（leaf subroutine）的
+调用更加快速（原因是不需要将返回地址压栈）。即使子程序不是叶子子程序，将返回地址
+保存至寄存器也能生成效率更高的代码块，比如唯一的目的是重排参数调用另一个函数的函
+数。其他子程序也能从使用 LR 中受益，因为它可以和其他被调用（callee）子程序需要的
+寄存器一起保存 —— 比如，一个 ARM 子程序在单个指令
+STMBD SP!, {R4-R7, LR}
+中将寄存器 4 - 7 和 LR 一起保存。
+被调用（callee）子程序需要将 LR 压栈。
+
+* EABI
+* AAPCS
+* Prologue 和 Epilogue
+http://en.wikipedia.org/wiki/Function_prologue
+
