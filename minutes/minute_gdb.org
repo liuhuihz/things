@@ -1,0 +1,69 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	GDB
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* 使用
++ call
+调用程序中的函数，参数为函数名称及参数，使用当前语言的符号表示法（notation），执
+行结果打印并保存在历史值里。
+函数参数如果是指针或者引用，则需要传递一个实际的内存区域（程序中的变量或者手动分配）
+#+BEGIN_SRC sh
+(gdb) p (int *) malloc(sizeof(int))
+$8 = (int *) 0x804b018
+(gdb) p * (int *) 0x804b018 = 17
+$9 = 17
+(gdb) p t_foo_ref<int>((const int&) * (const int *) 0x804b018 )
+17
+$10 = void
+(gdb)
+#+END_SRC
+
+* gdb vs windbg
+|                      | GDB                             | WinDbg     |
+| 运行                 | run (r)                         | g          |
+| 继续执行             | continue (c)                    |            |
+| 单步执行             | next                            |            |
+| 单步执行             | step (s)                        |            |
+| 单步执行             | stepi (si)                      |            |
+| 查看反汇编           | disassemble                     |            |
+| 查看符号信息         | symbol                          |            |
+| 设置断点             | break (b)                       | bp, bm     |
+| 清除断点             | delete <N>                      | bc         |
+| 禁用断点             | disable <N>                     | bd         |
+| 使用断点             | enable <N>                      |            |
+| 列断点               | info breakpoints                | bl         |
+| 设置数据断点         | watch                           |            |
+| 使用软件数据断点     | set can-use-hw-watchpoints 0    |            |
+| 查看调用堆栈         | backtrace (bt)                  | k          |
+| 查看当前栈帧         | frame <N> (f)                   |            |
+| 查看局部变量         | info locals                     |            |
+| 查看变量值           | print (p)                       |            |
+| 查看内存             | examine (x)                     |            |
+| 查看线程             | info threads (i th)             |            |
+| 切换线程             | thread <N> (t)                  |            |
+| 重新加载符号         | nosharedlibrary                 | .reload -f |
+|                      | sharedlibrary                   |            |
+| 查看模块符号信息     | info sharedlibrary              | lm         |
+| 加载可执行文件符号表 | symbol-file                     |            |
+| 加载动态库文件符号表 | add-symbol-file                 |            |
+| 设置源文件路径       | directory <dirname> (dir)       |            |
+| 替换源文件路径       | set substitute-path <from> <to> |            |
+| 当前源文件信息       | info source                     |            |
+| 当前所有源文件信息   | info sources                    |            |
