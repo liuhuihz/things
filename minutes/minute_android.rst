@@ -41,6 +41,35 @@ Android 使用 Google 自己开发的 Bionic Libc 而非 glibc （GNU C Library�
 
 
 --------------------------------------------------
+Linaro 与 Android
+--------------------------------------------------
+Linaro
+
+
+--------------------------------------------------
+Repo
+--------------------------------------------------
+
+Repo is a tool that makes it easier to work with Git in the context of Android.
+
+To install Repo:
+
+Make sure you have a bin/ directory in your home directory and that it is included in your path:
+
+.. code:: shell
+
+  $ mkdir ~/bin
+  $ PATH=~/bin:$PATH
+
+Download the Repo tool and ensure that it is executable:
+
+.. code:: shell
+
+  $ curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+  $ chmod a+x ~/bin/repo
+
+
+--------------------------------------------------
 Toolchain
 --------------------------------------------------
 Android 世界的四种 toolchain ：
@@ -59,10 +88,11 @@ It is possible to build toolchain with sysroot, but that is a special-purpose op
   This is used for Android application development. This is completely different layer from system, platform layer - all Android application are Dalvik managed once, any native-CPU code goes in form of JNI shared libraries. NDK toolchain is intended to build just such JNI shared libs. NDK toolchain is build separately from the platform toolchain, with other set of scripts (See "make ndk" in platform tree).
 
 
---------------------------------------------------
-Linaro 与 Android
---------------------------------------------------
-Linaro
+.. code:: shell
+
+  $ repo init -u https://android.googlesource.com/toolchain/manifest
+  $ repo sync
+
 
 --------------------------------------------------
 Compile Android system
@@ -94,13 +124,17 @@ vendorsetup.sh
     device/generic/armv7-a-neon/vendorsetup.sh
     device/samsung/manta/vendorsetup.sh
 
+
 Notes
 --------------------------------------------------
 
 Using Bash shell please.
 
+
 Initialize
 --------------------------------------------------
+
+初始化编译使用的 shell 函数及自动完成设置。
 
 .. code:: shell
 
@@ -112,8 +146,11 @@ or
 
   $ source build/envsetup.sh
 
+
 Choose a Target
 --------------------------------------------------
+
+选择编译目标平台、设备，并设置相关的环境变量。
 
 .. code:: shell
 
@@ -143,3 +180,57 @@ and the BUILDTYPE is one of the following:
 +------------+-----------------------------------------------------------------------------+
 | eng        | development configuration with additional debugging tools                   |
 +------------+-----------------------------------------------------------------------------+
+
+
+Build the Code
+--------------------------------------------------
+
+Assume you have 4 CPUs
+
+.. code:: shell
+
+  $ make -j4
+
+Makefile -> build/core/main.mk -> Android.mk
+
+
+OpenMAX
+--------------------------------------------------
+
+OpenMAX 是一个多媒体应用程序的标准。由 NVIDIA 公司和 Khrons 在 2006 年推出。
+
+OpenMAX 是 Khrons 制定的 API ，这个 Khrons 也是 OpenGL 的制定者，同时在着手制定的标准规范还有 OpenGL es ， OpenVG ， OpenEL 等等，其中大多数都是针对手持设备和嵌入式设备的。
+
+OpenMAX 自上而下分为三个层次： OpenMAX AL ， OpenMAX IL 和 OpenMAX DL 。
+
+- OpenMAX AL
+  Application Layer
+
+- OpenMAX IL
+  Integration Layer
+
+- OpenMAX DL
+  Development Layer
+
+
+Android 源代码
+--------------------------------------------------
+
+${AOSP}/bionic                          Bionic Libc 库
+${AOSP}/system                          嵌入式 linux 系统核心
+${AOSP}/system/core                     核心底层
+${AOSP}/system/core/libutils
+${AOSP}/system/core/libcutils           系统级支持，线程、进程、 socket 等。
+${AOSP}/system/core/init                init 启动程序
+
+sp 定义
+${AOSP}/system/core/include/utils/StrongPointer.h
+
+wp 定义
+${AOSP}/system/core/include/utils/RefBase.h
+
+Binder 机制的 native 支持 （ libbinder ）
+${AOSP}/frameworks/native/libs/binder
+
+DECLARE_META_INTERFACEDECLARE_META_INTERFACE 和 IMPLEMENT_META_INTERFACE
+${AOSP}/frameworks/native/include/binder/IInterface.h
