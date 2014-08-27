@@ -1,0 +1,118 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE: TeX 笔记
+#+AUTHOR: 刘晖
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+
+* 概述
+  http://en.wikibooks.org/wiki/TeX
+  http://en.wikibooks.org/wiki/LaTeX
+  http://en.wikibooks.org/wiki/ConTeXt
+
+* 级别
+** 分发（Distribution）
+** 前端（Front ends）
+** 引擎（Engines）
+   pdfTex pTex LuaTex XeTex
+** 格式（Formats）
+   plain Tex LaTex ConTeXt TeXinfo AMSTex
+** 宏包（Packages）
+* 文件格式
+** dvi
+** ps
+** pdf
+** idx
+  索引文件
+** out
+  书签文件
+
+  dvi -> ps -> pdf
+  Tex/Latex 生成 dvi
+  dvips 生成 ps
+  ps2pdf 生成 pdf
+
+  pdflatex 从 tex 生成 pdf
+
+  因为 dvi ， ps 格式文件没有超链接的概念和设计，所以在生成的 html/pdf 文档中交叉引用不支持超链接，需要使用 hyperref 宏包提供对交叉引用的超链接支持。
+
+* 概念
+** Box
+  - baseline
+  - height
+  - depth
+  - width
+  - reference point
+
+** Glue
+** Mode
+
+  - Vertical mode
+    This is the mode in which TeX starts, and build pages.
+    Building the main vertical list, from which the pages of output are derived.
+
+  - Internal vertical mode
+    TeX is in this mode within \vbox{...}.
+    Building a vertical list for a vbox.
+
+  - Horizontal mode
+    When constructing paragraphs.
+    Building a horizontal list for a paragraph.
+
+  - Restricted horizontal mode
+    Within an \hbox{...}.
+    Building a horizontal list for an hbox.
+
+  - Math mode
+    $...$ for inline math.
+    Building a mathematical formula to be placed in a horizontal list.
+
+  - Display math mode
+    $$...$$ (and LaTeX's other display math environments).
+    Building a mathematical formula to be placed on a line by itself, temporarily interrupting the current paragraph.
+
+  - No mode
+    In tex.web corresponds to the variable =mode= having the value =0=, only within \write commands.
+
+  The difference for the normal and restricted horizontal mode is that in the restricted mode there can't be a line break.
+  In short: when TeX builds up a line it is in horizontal mode. A \hbox or \mbox however is restricted horizontal mode.
+  The horizontal boxes are then stacked together in vertical boxes.
+
+** Command
+
+** Environment
+
+
+* 常用宏包
+** inputenc
+  用来指定输入字符编码，一般而言，应该跟源文件的编码一致。
+  #+BEGIN_SRC tex
+  \usepackage[latin1]{inputenc}
+  #+END_SRC
+  我们知道，不同的字符编码中，同一个字符值（二进制表示）可能表示不同的字符，而 Tex 系统读入源文件时，并不知道任何文件编码的信息，它所看到的都是字符的二进制值。
+  所以需要指定这个给 inputenc 宏来作转换时的参考。
+  现在使用 xelatex 和 luatex ，操作的文件为 utf-8 编码，不需要这个宏包。
+** fontenc
+  用来指定输出字体的字符编码。
+  #+BEGIN_SRC tex
+  \usepackage[T1]{fontenc}
+  #+END_SRC
+  这个宏包的使用需要跟 inputenc 宏包保持一致，否则因为输入和输出使用不同编码会导致错误。
+  现在使用 xelatex 和 lualatex ，操作的文件为 utf-8 编码，不需要这个宏包。
+** fontspec
+  是一个供 xelatex 和 lualatex 使用的宏包，它通过 NFSS 为运行于 xelatex 或 lualatex 引擎之上的 latex 提供一个自动化的和统一的界面以使用 AAT 和 OpenType 字体。
+  #+BEGIN_SRC tex
+  \usepackage{fontspec}
+  \setmainfont{PT Serif}        % Set 'roman' font, same as the old \setromanfont .
+  \setsansfont{PT Serif}        % Set sans serif font.
+  \setmonofont{Courier}         % Set 'typewriter'(monospaced) font.
+  #+END_SRC
+** hyperref
+  该宏包扩展了 LaTex 的所有的交叉引用命令的功能，使得 LaTex 源文件中有交叉引用的地方，如目录、参考文献、图形和表格等，在制作成的 PDF 格式文件中也具有超文本链接功能。
+  它还提供命令支持在文件中加入对外部文件和互联网网址的链接。
+** xcolor
+** graphicx
+** PGF/TikZ
+** PSTricks

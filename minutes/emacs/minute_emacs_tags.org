@@ -1,0 +1,64 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Emacs 之 Tags
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+Tags
+Tags 工具的目的是为源文件中不同的语言对象生成索引（或者标签）文件，这个文件可以被编辑器或者其他工具利用来简单快捷的找到这些对象。
+一个 "tag" 表明拥有索引项的一个语言对象（或者说，该索引项为这个对象而建）。
+
+ctags, etags, cscope, GNU global
+ctags 和 etags 只能生成关于对象定义的信息。 cscope 和 GNU global 还可以生成符号交叉引用信息（ symbol cross-reference ）。
+
+ctags 命令生成 tags 表文件，该文件格式能被 vi 识别，特点是支持语言种类多。有 exuberant ctags 可使用在 emacs 中。
+#+BEGIN_SRC shell
+$ ctags --list-languages
+$ ctags --list-kinds
+$ ctags --list-maps
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ ctags *
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ ctags -R
+#+END_SRC
+
+etags 命令生成 TAGS 表文件，该文件格式能被 emacs 识别。
+
+cscope 
+查找 C 符号；
+查找函数定义；
+查找扇入信息；
+查找扇出信息；
+查找包含该文件的文件信息；
+
+GNU global 也指 gtags ，生成 GTAGS、GRTAGS、GSYMS、GPATH。
+#+BEGIN_SRC shell
+$ gtags -v
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ gtags -vi
+$ global -u
+#+END_SRC
+
+
+
