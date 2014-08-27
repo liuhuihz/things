@@ -145,10 +145,61 @@ Nginx 源代码学习笔记
 
 
 
+字符串 （ ngx_str_t ）
+---------------------------------
+| src/core/ngx_string.h
+| src/core/ngx_string.c
+
+.. code-block:: c
+
+  typedef struct {
+      size_t      len;
+      u_char     *data;
+  } ngx_str_t;
+
+
+
+列表 （ ngx_list_t ）
+---------------------------------
+| src/core/ngx_list.h
+| src/core/ngx_list.c
+
+.. code-block:: c
+
+  typedef struct ngx_list_part_s  ngx_list_part_t;
+
+  struct ngx_list_part_s {
+      void             *elts;
+      ngx_uint_t        nelts;
+      ngx_list_part_t  *next;
+  };
+
+
+  typedef struct {
+      ngx_list_part_t  *last;
+      ngx_list_part_t   part;
+      size_t            size;
+      ngx_uint_t        nalloc;
+      ngx_pool_t       *pool;
+  } ngx_list_t;
+
+
+
 数组 （ ngx_array_t ）
 ---------------------------------
 | src/core/ngx_array.h
 | src/core/ngx_array.c
+
+.. code-block:: c
+
+  typedef struct {
+      void        *elts;
+      ngx_uint_t   nelts;
+      size_t       size;
+      ngx_uint_t   nalloc;
+      ngx_pool_t  *pool;
+  } ngx_array_t;
+
 
 | ngx_array_create
 | 在内存池中分配固定大小和元素数目的数组。
@@ -156,6 +207,11 @@ Nginx 源代码学习笔记
 | ngx_array_push
 | ngx_array_push_n
 | 从数组对象中取出一个元素，如数组满了，则在内存池中扩展（内存池中剩余空间足够）
-或重新分配更大（两倍于当前的元素数目）的数组。
+| 或重新分配更大（两倍于当前的元素数目）的数组。
 
+
+红黑树 （ ngx_rbtree_t ）
+---------------------------------
+| src/core/ngx_rbtree.h
+| src/core/ngx_rbtree.c
 
