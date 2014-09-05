@@ -29,6 +29,13 @@ auto-complete, anything, company
 ido, icicles, helm(Helm is the successor of Anything)
 
 * 补全
+补全是很多程序拥有的一个特性，它的功能是在输入过程中对已输入的部分内容，参考特定
+源信息，为后面的输入提供可能的候选或者补充完整。该特性可以提高我们的输入效率。
+
+在 Emacs 中，C-x C-f 打开文件时的路径、文件名的补全，它的参考信息源是文件系统的
+目录树结构；M-x 执行命令、函数时的补全，它的参考信息源是 Emacs 各个包的命令及函
+数集合。这些补全，有的通过 Emacs 自带的包可以支持，有的需要第三方包的支持。
+
 路径、文件名补全，命令补全
 minibuffer
 单独 buffer
