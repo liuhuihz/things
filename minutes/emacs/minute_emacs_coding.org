@@ -23,9 +23,24 @@ CEDET
 
 ctags, etags, cscope, GNU global
 
+代码跳转（ code navigation ）与代码补全（ auto completion ，自动完成，智能提示）
 auto-complete, anything, company
 
 ido, icicles, helm(Helm is the successor of Anything)
 
+* 补全
+路径、文件名补全，命令补全
+minibuffer
+单独 buffer
+
+** IDO(Interactively Do Things)
+从 22 版本开始，为 Emacs 的一部分。
+
+** IswitchB(Iswitch Buffers)
+曾经作为 Gnu Emacs 的，从 Emacs 24.4 开始被移除，使用 IcompleteMode 替换。
+命令 switch-to-buffer ，快捷方式 C-x b 。
+
 flycheck flymake
 
+
+* 代码跳转
