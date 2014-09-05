@@ -50,7 +50,7 @@ cscope
 查找扇出信息；
 查找包含该文件的文件信息；
 
-GNU global 也指 gtags ，生成 GTAGS、GRTAGS、GSYMS、GPATH。
+GNU global 也指 gtags （原来 google 有个 GTags 项目，已停止开发。），生成 GTAGS、GRTAGS、GSYMS、GPATH。
 #+BEGIN_SRC shell
 $ gtags -v
 #+END_SRC
@@ -60,5 +60,17 @@ $ gtags -vi
 $ global -u
 #+END_SRC
 
+如果 gtags.files 存在，或者通过 -f 参数指定一个文件，则 gtags 只扫描该文件中说明的文件列表。
+
+
+|------------+-------+-------+--------+------------|
+|            | ctags | etags | cscope | GNU global |
+|------------+-------+-------+--------+------------|
+| 支持语言   |       |       |        |            |
+| 符号       |       |       |        |            |
+| 交叉引用   |       |       |        |            |
+| 扇入、扇出 |       |       |        |            |
+| 符号表格式 |       |       |        |            |
+|------------+-------+-------+--------+------------|
 
 
