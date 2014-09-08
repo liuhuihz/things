@@ -23,7 +23,7 @@ CEDET
 
 ctags, etags, cscope, GNU global
 
-代码跳转（ code navigation ）与代码补全（ auto completion ，自动完成，智能提示）
+代码跳转（ code navigation ）与代码补全（ auto completion ，自动完成，智能提示 Intellisense ）
 auto-complete, anything, company
 
 ido, icicles, helm(Helm is the successor of Anything)
@@ -32,13 +32,18 @@ ido, icicles, helm(Helm is the successor of Anything)
 补全是很多程序拥有的一个特性，它的功能是在输入过程中对已输入的部分内容，参考特定
 源信息，为后面的输入提供可能的候选或者补充完整。该特性可以提高我们的输入效率。
 
-在 Emacs 中，C-x C-f 打开文件时的路径、文件名的补全，它的参考信息源是文件系统的
-目录树结构；M-x 执行命令、函数时的补全，它的参考信息源是 Emacs 各个包的命令及函
-数集合。这些补全，有的通过 Emacs 自带的包可以支持，有的需要第三方包的支持。
+在 Emacs 中，C-x C-f 打开文件时的路径、文件名的补全，它的参考源信息是文件系统的
+目录树结构；M-x 执行命令、函数时的补全，它的参考源信息是 Emacs 各个包的命令及函
+数集合；缩写扩展可以将缩写补全成完全形式，它的参考源信息是预定义的缩写表数据。
+另外，在编程中，我们有时需要根据上下文来决定当前合理的补全内容，如结构体变量成员，类实例方法等，这需要对源文件及相关文件解析来得到补全信息，
+这有两种方式：
+ - 静态解析： 使用工具扫描源文件生成符号文件数据，然后使用这些数据来进行补全，这些数据也可能用来代码跳转。
+ - 动态解析： 实时对源文件进行解析。
+这些补全功能，有的通过 Emacs 自带的包支持，有的需要第三方包的支持。
 
 路径、文件名补全，命令补全
-minibuffer
-单独 buffer
+候选显示：minibuffer 或单独 buffer
+用户界面：弹出菜单 tooltip overlay
 
 ** IDO(Interactively Do Things)
 从 22 版本开始，为 Emacs 的一部分。
@@ -49,5 +54,13 @@ minibuffer
 
 flycheck flymake
 
+** YASnippet
+
+** AutoComplete
+** Company(Complete Anything)
+** Anything
+** Helm
+
+** Icicles
 
 * 代码跳转

@@ -23,9 +23,10 @@ Tags
 Tags 工具的目的是为源文件中不同的语言对象生成索引（或者标签）文件，这个文件可以被编辑器或者其他工具利用来简单快捷的找到这些对象。
 一个 "tag" 表明拥有索引项的一个语言对象（或者说，该索引项为这个对象而建）。
 
-ctags, etags, cscope, GNU global
+* ctags, etags, cscope, GNU global
 ctags 和 etags 只能生成关于对象定义的信息。 cscope 和 GNU global 还可以生成符号交叉引用信息（ symbol cross-reference ）。
 
+** ctags
 ctags 命令生成 tags 表文件，该文件格式能被 vi 识别，特点是支持语言种类多。有 exuberant ctags 可使用在 emacs 中。
 #+BEGIN_SRC shell
 $ ctags --list-languages
@@ -41,16 +42,18 @@ $ ctags *
 $ ctags -R
 #+END_SRC
 
+** etags
 etags 命令生成 TAGS 表文件，该文件格式能被 emacs 识别。
 
-cscope 
+** cscope
 查找 C 符号；
 查找函数定义；
 查找扇入信息；
 查找扇出信息；
 查找包含该文件的文件信息；
 
-GNU global 也指 gtags （原来 google 有个 GTags 项目，已停止开发。），生成 GTAGS、GRTAGS、GSYMS、GPATH。
+** GNU global
+GNU global 也指 gtags （ google 有个 GTags 项目，已停止开发。），生成 GTAGS、GRTAGS、GSYMS、GPATH。
 #+BEGIN_SRC shell
 $ gtags -v
 #+END_SRC
@@ -62,6 +65,37 @@ $ global -u
 
 如果 gtags.files 存在，或者通过 -f 参数指定一个文件，则 gtags 只扫描该文件中说明的文件列表。
 
+在 Emacs 中使用 GNU global ，参考 [[http://www.emacswiki.org/emacs/GnuGlobal][EmacsWiki: GnuGlobal]] 。
+[[https://github.com/leoliu/ggtags][ggtags]]
+
+#+BEGIN_SRC elisp
+;; Load ggtags package
+(require 'ggtags)
+
+;; Enable ggtags minor mode in c, c++, java major mode
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+              (ggtags-mode 1))))
+#+END_SRC
+
+#+CAPTION: 常用快捷键
+||||
+| M-. | ggtags-find-tag-dwim | 查找标签 ，如使用 C-u 前缀，则查找手动输入的标签 |
+| M-, | ||
+| M-] | ||
+
+如果查找的结果有多个，则一个列出所有结果的名为 *ggtags-global* 的缓冲区将显示出来，并且 ggtags-navigation-mode 模式将打开，
+这个模式下 *ggtags-global* 缓冲区的导航命令全局可用。
+
+#+CAPTION: *ggtags-global* 缓冲区导航命令
+| M-n | 下一个匹配项 |
+| M-p | 上一个匹配项 |
+| M-{ | 下一个文件 |
+| M-} | 上一个文件 |
+| M-< | 第一个匹配项 |
+| M-> | 最后一个匹配项 |
+
 
 |------------+-------+-------+--------+------------|
 |            | ctags | etags | cscope | GNU global |
@@ -72,5 +106,3 @@ $ global -u
 | 扇入、扇出 |       |       |        |            |
 | 符号表格式 |       |       |        |            |
 |------------+-------+-------+--------+------------|
-
-
