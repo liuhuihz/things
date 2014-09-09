@@ -19,4 +19,11 @@
 
 #+LATEX: \newpage
 
-Icicles 是一个 Emacs 使用的库，目的在于增强 minibuffer 的补全功能。
+Icicles 是一个 Emacs 使用的库，目的在于增强 minibuffer 的补全功能。它的补全行为
+不同于 Ido 或者 IswitchB 。
+如果希望 Icicles 的行为与 Ido 兼容，可以打开 `icicle-ido-like-mode` 这个 minor
+mode （ Emacs 21 开始）。开启这个模式会将
+`icicle-show-Completions-initially-flag` 和
+`icicle-top-level-when-sole-completion-flag` 设置为 `t` 。
+如果你只是希望在查找缓冲区和文件的时候兼容 Ido ，那么将
+`icicle-buffers-ido-like-flag` 和 `icicle-files-ido-like-flag` 设置为非 `nil` 。
