@@ -19,15 +19,38 @@
 
 #+LATEX: \newpage
 
-Tags
-Tags 工具的目的是为源文件中不同的语言对象生成索引（或者标签）文件，这个文件可以被编辑器或者其他工具利用来简单快捷的找到这些对象。
-一个 "tag" 表明拥有索引项的一个语言对象（或者说，该索引项为这个对象而建）。
+* 标签（ Tags ）
 
-* ctags, etags, cscope, GNU global
-ctags 和 etags 只能生成关于对象定义的信息。 cscope 和 GNU global 还可以生成符号交叉引用信息（ symbol cross-reference ）。
+标签文件是语言对象的索引表，并记录了它们在何处定义以及在何处被引用。这个文件可以被编辑器或者其他工具利用来简单快捷的找到这些对象，实现代码导航和代码跳转的功能。
+一个标签表明在标签文件中拥有索引项的一个语言对象（或者说，该索引项为这个对象而建）。
+标签工具的目的是为源文件中不同的语言对象生成标签文件。
 
-** ctags
-ctags 命令生成 tags 表文件，该文件格式能被 vi 识别，特点是支持语言种类多。有 exuberant ctags 可使用在 emacs 中。
+Emacs 中使用的标签生成工具有 Ctags, etags, cscope, GNU global 等等。
+其中 Ctags 和 etags 只能生成关于对象定义的信息。 cscope 和 GNU global 还可以生成符号交叉引用信息（ symbol cross-reference ）。
+
+下面介绍如何在 Emacs 中使用它们。
+
+
+** etags
+etags 是 Emacs 里自带的标签文件生成程序，生成 TAGS 表文件，该文件格式能被 emacs 识别。
+没有目录递归参数，因此使用 find 命令列出子目录需要解析的源文件。
+
+#+BEGIN_SRC sh
+$ find . -type f -iname "*.[ch]" | etags -
+# or
+$ find . -type f -iname "*.[ch]" | xargs etags --append
+#+END_SRC
+
+前端使用 Emacs 自带的 etags.el 。
+#+CAPTION: 常用快捷键
+||||
+|| visit-tags-table | 指定 TAGS 文件，随后的 tags 命令使用该文件。 |
+| M-. | find-tag | 查找标签 ，如使用 C-u 前缀，则继续查找同一标签 |
+| M-* | pop-tag-mark | 返回之前调用 M-. 的位置。 |
+
+
+** Ctags
+Ctags 命令生成 tags 表文件，该文件格式能被 vi 识别，特点是支持语言种类多。有 Exuberant Ctags 可使用在 emacs 中。
 #+BEGIN_SRC shell
 $ ctags --list-languages
 $ ctags --list-kinds
@@ -36,24 +59,40 @@ $ ctags --list-maps
 
 #+BEGIN_SRC shell
 $ ctags *
-#+END_SRC
 
-#+BEGIN_SRC shell
+# Recurise
 $ ctags -R
+
+# Generate tag file (TAGS) can be used with Emacs.
+$ ctags -e
 #+END_SRC
 
-** etags
-etags 命令生成 TAGS 表文件，该文件格式能被 emacs 识别。
+带 -e 参数生成的 TAGS 文件兼容 etags 生成的 TAGS 文件，所以也使用 etags.el 前端。
+
 
 ** cscope
+http://cscope.sf.net/
 查找 C 符号；
 查找函数定义；
 查找扇入信息；
 查找扇出信息；
 查找包含该文件的文件信息；
 
+前端：
+[[https://github.com/dkogan/xcscope.el][xcscope]]
+
 ** GNU global
 GNU global 也指 gtags （ google 有个 GTags 项目，已停止开发。），生成 GTAGS、GRTAGS、GSYMS、GPATH。
+
+'GTAGS'
+Tag file for definitions.
+
+'GRTAGS'
+Tag file for references.
+
+'GPATH'
+Tag file for source files.
+
 #+BEGIN_SRC shell
 $ gtags -v
 #+END_SRC
@@ -66,6 +105,7 @@ $ global -u
 如果 gtags.files 存在，或者通过 -f 参数指定一个文件，则 gtags 只扫描该文件中说明的文件列表。
 
 在 Emacs 中使用 GNU global ，参考 [[http://www.emacswiki.org/emacs/GnuGlobal][EmacsWiki: GnuGlobal]] 。
+前端:
 [[https://github.com/leoliu/ggtags][ggtags]]
 
 #+BEGIN_SRC elisp
@@ -84,6 +124,7 @@ $ global -u
 | M-. | ggtags-find-tag-dwim | 查找标签 ，如使用 C-u 前缀，则查找手动输入的标签 |
 | M-, | ||
 | M-] | ||
+| M-* | | 返回之前调用 M-. 的位置。（ etags.el 中定义的） |
 
 如果查找的结果有多个，则一个列出所有结果的名为 *ggtags-global* 的缓冲区将显示出来，并且 ggtags-navigation-mode 模式将打开，
 这个模式下 *ggtags-global* 缓冲区的导航命令全局可用。
@@ -95,6 +136,8 @@ $ global -u
 | M-} | 上一个文件 |
 | M-< | 第一个匹配项 |
 | M-> | 最后一个匹配项 |
+
+[[http://www.emacswiki.org/emacs/xgtags.el][xgtags]]
 
 
 |------------+-------+-------+--------+------------|
