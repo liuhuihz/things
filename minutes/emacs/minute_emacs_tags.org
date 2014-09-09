@@ -30,7 +30,6 @@ Emacs 中使用的标签生成工具有 Ctags, etags, cscope, GNU global 等等�
 
 下面介绍如何在 Emacs 中使用它们。
 
-
 ** etags
 etags 是 Emacs 里自带的标签文件生成程序，生成 TAGS 表文件，该文件格式能被 emacs 识别。
 没有目录递归参数，因此使用 find 命令列出子目录需要解析的源文件。
@@ -48,19 +47,18 @@ $ find . -type f -iname "*.[ch]" | xargs etags --append
 | M-. | find-tag | 查找标签 ，如使用 C-u 前缀，则继续查找同一标签 |
 | M-* | pop-tag-mark | 返回之前调用 M-. 的位置。 |
 
-
 ** Ctags
 Ctags 命令生成 tags 表文件，该文件格式能被 vi 识别，特点是支持语言种类多。有 Exuberant Ctags 可使用在 emacs 中。
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh
 $ ctags --list-languages
 $ ctags --list-kinds
 $ ctags --list-maps
 #+END_SRC
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh
 $ ctags *
 
-# Recurise
+# Recurse
 $ ctags -R
 
 # Generate tag file (TAGS) can be used with Emacs.
@@ -68,7 +66,6 @@ $ ctags -e
 #+END_SRC
 
 带 -e 参数生成的 TAGS 文件兼容 etags 生成的 TAGS 文件，所以也使用 etags.el 前端。
-
 
 ** cscope
 http://cscope.sf.net/
@@ -78,8 +75,76 @@ http://cscope.sf.net/
 查找扇出信息；
 查找包含该文件的文件信息；
 
+cscope 是一个交互式的工具，允许用户以交互的方式浏览 C 源文件，查找符号定义等。
+
+cscope 会生成一个符号交叉引用（ symbol cross-reference ）数据库文件（默认为
+cscope.out ，可通过 -f 参数使用其他名字）利用这个文件来定位源文件中的函数、函数
+调用、宏、变量和预编译符号等。
+
+使用 -q 参数可以通过反向索引（ inverted index ）来更快速的进行符号查找，这个参数
+会生成另外两个数据库文件（默认为 cscope.in.out 和 cscope.po.out ）。
+
+cscope 默认检查当前目录下的 C （ .c 和 .h ）， lex （ .l ） 和 yacc （ .y ）等源
+文件，用户也可以在命令行中列举需要检查的源文件，又或者，用户可以通过 -i 参数指定
+一个包括所有需要检查的源文件的列表文件（默认为 cscope.files ，可以指定 - 为文件
+名来从标准输入读入文件列表），如果指定了列表文件，则在命令行中列举的源文件将被忽略。
+#+BEGIN_SRC sh
+$ cscope -i other.files
+#+END_SRC
+
+如果需要递归子目录查找，使用 -R 参数
+#+BEGIN_SRC sh
+# Recurse
+$ cscope -R
+#+END_SRC
+
+任何情况下，如果在当前目录下找不到 `#include` 包含的文件， cscope 会转而到缺省标
+准目录下查找。 cscope 还允许通过 -I 参数来指定其他查找头文件的目录，可以指定多个
+-I 参数，按照它们出现的顺序查找。这些目录在当前目录（首先查找）之后，缺省标准目
+录（最后查找）之前查找。
+
+-k 参数表示使用内核模式（ kernel mode ），这个模式下不使用缺省标准目录
+（通常是 /usr/include ）来查找生成数据库文件，因为内核代码不使用它们。
+
+在交互状态下，使用 C-d 来退出程序。
+
+如果只是想生成符号交叉引用文件，不希望交互操作，使用 -b 参数
+#+BEGIN_SRC sh
+$ cscope -b
+#+END_SRC
+
+默认情况下， cscope 使用递增方式，只重建上次调用之后修改过的文件。可以通过 -u 参
+数来无条件重建所有文件。
+
+另外，在有些系统的 cscope 里，带有 cscope-indexer 和 ocs 两个脚本来方便用户使用。
+
+
 前端：
 [[https://github.com/dkogan/xcscope.el][xcscope]]
+
+#+BEGIN_SRC elisp
+;; Load xcscope package
+(require 'xcscope)
+;; Don't update database when searching
+(setq cscope-do-not-update-database t)
+
+;; Setup cscope in c, c++ major mode
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode)
+              (cscope-setup))))
+#+END_SRC
+
+#+CAPTION: 常用快捷键
+||||
+| C-c s s | cscope-find-this-symbol | 查找标签符号 |
+| C-c s d | cscope-find-global-definition | 查找全局定义 |
+| C-c s c | cscope-find-functions-calling-this-function | 查找函数扇入 |
+| C-c s C | cscope-find-called-functions | 查找函数扇出 |
+| C-c s f | cscope-find-this-file | 查找该文件 |
+| C-c s i | cscope-find-files-including-file | 查找包含某文件的所有文件 |
+| C-c s t | cscope-find-this-text-string | 查找字符串 |
+| C-c s u | cscope-pop-mark | 返回上次执行查找的位置 |
 
 ** GNU global
 GNU global 也指 gtags （ google 有个 GTags 项目，已停止开发。），生成 GTAGS、GRTAGS、GSYMS、GPATH。
@@ -93,11 +158,11 @@ Tag file for references.
 'GPATH'
 Tag file for source files.
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh
 $ gtags -v
 #+END_SRC
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh
 $ gtags -vi
 $ global -u
 #+END_SRC
