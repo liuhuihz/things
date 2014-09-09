@@ -28,7 +28,7 @@ CEDET （ Collection of Emacs Development Environment Tools ） http://cedet.sou
 ** Semantic
   一个基于语法分析器（ Parser ）的文本分析的框架。它是一个词法分析器（ lexer ），一个语法分析器的生成器，同时也是一个语法分析器。
 Semantic 的目的是为希望以通用方式处理各种语言，跟特定语言无关的语言工具作者提供一个中间层（ intermediate ）的 API ，
-同样的，它也为身为语言专家的语言模式（ Mode ）作者提供一种简单的方式来编写供语言工具使用的语言分析器，他们也不需要这些语言工具的细节。
+同样的，它也为身为语言专家的语言模式（ Mode ）作者提供一种简单的方式来编写供语言工具使用的语法分析器，他们也不需要这些语言工具的细节。
 为从代码萃取的信息提供通用的表述，如此，其他的包（比如 JDEE 或 ECB ）可以实现现代开发环境所需的功能 - 代码补全，代码导航（代码跳转）等等。
 *** SemanticDB
 *** Bovine / Wisent
@@ -45,4 +45,3 @@ Semantic 的目的是为希望以通用方式处理各种语言，跟特定语�
 ** EIEIO
 ** Cogre
   在 Emacs 中生成类似 UML 图表的库，与 Semantic 集成。
-
