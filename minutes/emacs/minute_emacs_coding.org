@@ -48,11 +48,18 @@ ido, icicles, helm(Helm is the successor of Anything)
 ** IDO(Interactively Do Things)
 从 22 版本开始，为 Emacs 的一部分。
 
+只针对查找 buffer 用 ido 模式。
+#+BEGIN_SRC elisp
+(ido-mode 'buffers)
+#+END_SRC
+
 ** IswitchB(Iswitch Buffers)
 曾经作为 Gnu Emacs 的，从 Emacs 24.4 开始被移除，使用 IcompleteMode 替换。
 命令 switch-to-buffer ，快捷方式 C-x b 。
 
 flycheck flymake
+
+** Icomplete mode
 
 ** YASnippet
 
