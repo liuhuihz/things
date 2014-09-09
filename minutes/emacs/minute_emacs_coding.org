@@ -62,5 +62,6 @@ flycheck flymake
 ** Helm
 
 ** Icicles
+#+INCLUDE: "minute_emacs_icicles.org"
 
 * 代码跳转
