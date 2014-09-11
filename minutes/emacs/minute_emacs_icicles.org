@@ -75,11 +75,15 @@ f`。
 辑操作中与（ and ）的关系，最终列出的补全候选是满足所有条件的项目。递增式补全的
 快捷键是 `M-*` （ icicle-narrow-candidates ）。
 
-比如希望匹配一个命令，命令中以 delete 为前缀而且包含 char ，那么我们键入 `M-x
+比如希望匹配一个命令，命令中以 delete 为前缀而且包含 char 和 ward ，那么我们键入 `M-x
 delete` 和 `TAB` ，表示第一个条件是以 delete 开头（ `TAB` 默认是前缀补全规则），
 然后输入 `M-*` ，再输入 `char` 和 `S-TAB` ，表示第二个条件是命令中包含
-`char` （ `S-TAB` 默认是 apropos 补全），所有满足这两个条件的命令都将列在
-`*Completions*` 缓冲区。
+`char` （ `S-TAB` 默认是 apropos 补全），然后输入 `M-*` ，再输入 `ward` 和 `S-TAB` ，
+表示第三个条件是命令中包含 `ward` ，所有满足这三个条件的命令都将列在 `*Completions*` 缓冲区。
+
+以这个例子来说，第二个条件最后输入的 `S-TAB` 和第三个条件开头输入的 `M-*` 可以简化成一个命令
+`S-SPC` （ icicle-apropos-complete-and-narrow ）。但没有 `TAB` 和 `M-*` 的简化，可能
+是因为在递增式补全里最多只能有一个 `TAB` 的补全。
 
 * 递减式补全（ Regressive Completion ）
 递减式补全指的是补全过程中输入额外条件来扩大补全候选项的范围。各条件之间是类似逻
@@ -90,3 +94,8 @@ delete` 和 `TAB` ，表示第一个条件是以 delete 开头（ `TAB` 默认�
 和 `TAB` ，表示第一个条件是以 delete 开头，然后输入 `M-+` 和 `char` ，然后 `TAB`
 ，表示第二个条件是以 char 开头。任何满足其中一个条件的命令都将列在
 `*Completions*` 缓冲区。
+
+同样的，递减式补全里也有一个命令 `S-backspace` （ icicle-apropos-complete-and-widen ）
+来简化 `S-TAB` 和 `M-+` 。
+
+* Multi-Commands
