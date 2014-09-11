@@ -10,6 +10,7 @@ window
 buffer
 frame
 prefix arg
+
 * Shell
 M-! cmd <RET> 或者 M-x shell-command
 运行 cmd ，输出显示到 \*Shell Command Output\* 缓冲区。
@@ -25,3 +26,22 @@ M-x shell
 M-x term
 
 M-x eshell
+
+* Help
+`C-h c <key>` 在回显区（ echo area ）显示快捷键绑定的命令
+`C-h k <key>` 查看快捷键绑定。
+`C-h K <key>` 查看 Emacs 手册中关于快捷键绑定命令的段落。
+`C-h b` 查看当前上下文所有快键绑定。
+`C-h f <function>` 查看函数。
+`C-h w <command>` 查看特定命令绑定的快捷键。
+`C-h v <variable>` 查看变量说明及当前值。
+`C-h m` 查看当前上下文的所有模式（ Major 和 Minor ）的快捷键绑定。
+`C-h l` 查看最近的 300 个键输入（包括键盘，鼠标及菜单）。
+`C-h L <language>` 查看语言环境（ language environment ）。
+`C-h C <coding>` 查看编码系统（ coding system ）
+`C-h I <input method>` 查看输入方法（ input method ）
+`C-h P <package>` 查看软件包（ package ）
+
+* 菜单（ Menu bar ）
+GUI 程序可以使用鼠标， <F10> 或者命令 menu-bar-open 操作菜单。
+终端下使用 M-` （ ESC-` ）， <F10> 或者命令 tmm-menubar 操作菜单。
