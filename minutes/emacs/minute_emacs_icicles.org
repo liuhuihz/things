@@ -19,7 +19,7 @@
 
 #+LATEX: \newpage
 
-Icicles 是一个 Emacs 使用的库，目的在于增强 minibuffer 的补全功能。它的补全行为
+Icicles 是一个 Emacs 使用的库，目的在于增强 Emacs 中 minibuffer 的补全功能。它的补全行为
 不同于 Ido 或者 IswitchB 。
 如果希望 Icicles 的行为与 Ido 兼容，可以打开 `icicle-ido-like-mode` 这个 minor
 mode （ Emacs 21 开始）。开启这个模式会将
@@ -27,3 +27,39 @@ mode （ Emacs 21 开始）。开启这个模式会将
 `icicle-top-level-when-sole-completion-flag` 设置为 `t` 。
 如果你只是希望在查找缓冲区和文件的时候兼容 Ido ，那么将
 `icicle-buffers-ido-like-flag` 和 `icicle-files-ido-like-flag` 设置为非 `nil` 。
+
+* 使用
+#+BEGIN_SRC elisp
+;; Load Icicles package
+(require 'icicles)
+
+(icy-mode 1)I
+#+END_SRC
+
+可以在使用中，可以通过 `M-x icy-mode` 来开关 Icicles mode 。
+
+* 补全规则
+补全功能中有哪些可能的候选项取决于补全方式。
+原生 Emacs 的 `Basic` 补全方式，补全候选项是前缀与输入相匹配的哪些项。比如，输入 `M-x region TAB` ，
+将显示所有以 `region` 开头的命令。原生 Emacs 在版本 23 之前，只有严格的前缀补全方式。版本 23 开始，
+使用了多种补全方式，你可以通过 `completion-styles` 参数来指定使用哪个方式，然而，很多 Emacs 命令
+会忽略这个参数。
+对于 Icicles ，可以在补全过程中动态修改补全方式 --- 使用 `C-(` 或者 `M-(` 。基本的前缀补全是其中一种，
+另外还可以选择 `regexp` 匹配（包括子串匹配）或者其他几种 `fuzzy` （模糊）匹配。 Icicles 将补全方式分为两组，
+`TAB` 补全使用第一组（叫做松散的 `prefix` 前缀补全）中的当前方式，`S-TAB` 补全使用第二组（叫做 `apropos` 合适补全）中的当前方式。
+
+* 键补全（ key completion ）和菜单补全（ menu completion ）
+在原生 Emacs 中，可以使用 `C-h k` ， `C-h b` ， `C-h f` 和 `C-h m` 获得键盘绑定的信息。
+Icicles 提供一个更快捷的方法取得这些信息，在顶层 Emacs 环境中使用 `S-TAB` ，
+当前上下文可用的键盘绑定都将显示在 `*Completions*` 缓冲区，你可以在缓冲区继续键入来筛选结果。
+这个特性之所以叫键补全是因为，你可以在快捷键输入的过程中使用 `S-TAB` 键来提供跟你已输入键序列匹配的可选项。
+比如，你输入 `C-x r` 后再输入 `S-TAB` ，所有当前可用的以 `C-x r` 开头的快捷键都将显示在 `*Completions*`
+缓冲区（只显示除已输入部分后剩下的键序列，同时有关于这个快捷键功能简单的说明）。
+键补全也指菜单补全，用户可以通过 `S-<F10>` 启动菜单补全，菜单项显示在 `*Completions*` 缓冲区。
+
+* 补全候选项
+补全操作中，所有可能的补全项会显示在 `*Completions*` 缓冲区。当前焦点下补全项的信息会自动显示在 mode line 里，
+也可以通过 `C-M-RET` 或者 `C-M-mouse-2` 得到更详细的信息，比如，函数名称候选项的详细信息就是该函数的 doc string 说明，等于 `C-h f`。
+另外，可以通过`C-mouse-3` 来弹出该项的上下文菜单。
+
+* 渐进式补全（ progressive completion ）
