@@ -77,7 +77,7 @@ f`。
 
 比如希望匹配一个命令，命令中以 delete 为前缀而且包含 char ，那么我们键入 `M-x
 delete` 和 `TAB` ，表示第一个条件是以 delete 开头（ `TAB` 默认是前缀补全规则），
-然后输入 `M-*` ，再输入 `char` ，然后按 `S-TAB` ，表示第二个条件是命令中包含
+然后输入 `M-*` ，再输入 `char` 和 `S-TAB` ，表示第二个条件是命令中包含
 `char` （ `S-TAB` 默认是 apropos 补全），所有满足这两个条件的命令都将列在
 `*Completions*` 缓冲区。
 
@@ -87,6 +87,6 @@ delete` 和 `TAB` ，表示第一个条件是以 delete 开头（ `TAB` 默认�
 快捷键是 `M-+` （ icicle-widen-candidates ）。
 
 比如希望匹配一个命令，命令中以 delete 或 char 为前缀，那么我们输入 `M-x delete`
-，然后 `TAB` ，表示第一个条件是以 delete 开头，然后输入 `M-+` ，再输入 `char` ，
-然后 `TAB` ，表示第二个条件是以 char 开头。任何满足其中一个条件的命令都将列在
+和 `TAB` ，表示第一个条件是以 delete 开头，然后输入 `M-+` 和 `char` ，然后 `TAB`
+，表示第二个条件是以 char 开头。任何满足其中一个条件的命令都将列在
 `*Completions*` 缓冲区。
