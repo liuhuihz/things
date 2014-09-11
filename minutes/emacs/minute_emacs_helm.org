@@ -1,7 +1,7 @@
 # -*- mode: org; coding: utf-8; -*-
 #+OPTIONS: \n:t
 #+OPTIONS: ^:nil
-#+TITLE:	Emacs 之 Anything
+#+TITLE:	Emacs 之 Helm
 #+AUTHOR: Liu Hui
 #+EMAIL: hliu@arcsoft.com
 #+LATEX_CLASS: cn-article
