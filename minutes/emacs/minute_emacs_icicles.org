@@ -123,3 +123,7 @@ Find file:
 
 在命令的同一次执行的时候你可以操作多个候选输入，甚至在同一个候选上操作多次（使用
 `C-u` 前缀操作。
+
+* 参考
+[[http://www.emacswiki.org/emacs/Icicles][EmacsWiki: Icicles]]
+
