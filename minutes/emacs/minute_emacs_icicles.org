@@ -36,7 +36,7 @@ mode （ Emacs 21 开始）。开启这个模式会将
 (icy-mode 1)
 #+END_SRC
 
-可以在使用中，可以通过 `M-x icy-mode` 来开关 Icicles mode 。
+在使用中，可以通过 `M-x icy-mode` 来开关 Icicles mode 。
 
 * 补全规则
 补全功能中有哪些可能的候选项取决于补全方式。
@@ -98,4 +98,28 @@ delete` 和 `TAB` ，表示第一个条件是以 delete 开头（ `TAB` 默认�
 同样的，递减式补全里也有一个命令 `S-backspace` （ icicle-apropos-complete-and-widen ）
 来简化 `S-TAB` 和 `M-+` 。
 
-* Multi-Commands
+* 多命令（ Multi-Commands ）
+多命令是一个让你可以在单个命令的执行时进行多个输入选择的命令：一个多选择
+（ multiple-choice ）的命令。
+
+没有什么特别的新鲜玩意，任何 Emacs 命令都可以被定义为使用输入循环（ input loop
+），请求多个文件名直到你通过某种方式通知它你已经完成输入。
+
+当你执行一个命令时，你可以清楚的知道它是不是一个多命令：如果是一个多命令，则提示
+信息会有个 `+` 前缀。比如， `icicle-file` 命令的提示：
+#+BEGIN_QUOTE
++ File or directory: 
+#+END_QUOTE
+
+通常，非多命令 `find-file` 的提示没有 `+` 前缀：
+#+BEGIN_QUOTE
+Find file: 
+#+END_QUOTE
+
+请记住， `+` 意味着你可以选择任意数量的输入。
+
+多命令用 `C-RET` 或者 `C-mouse-2` 选择多个候选输入，然后用 `RET` 确定执行命令。
+如果只有一个输入，直接选择后然 `RET` ，就像通常的命令一样。
+
+在命令的同一次执行的时候你可以操作多个候选输入，甚至在同一个候选上操作多次（使用
+`C-u` 前缀操作。
