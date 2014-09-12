@@ -37,14 +37,14 @@ Helm （ Anything ），提供全新的 Emacs 使用体验。通常 Emacs 的使
 Helm 的 minibuffer 补全与 Emacs 缺省的补全有些许不同。
 
 1) Emacs 缺省的补全是以 minibuffer 为中心的（ minibuffer centric ）。
-当在 minibuffer 输入并按 `TAB` 之后，Emacs 会转化你在 minibuffer 的输入（比如，
-将所有候选项共同的，但你没有完全输入的部分补到你的输入之后）帮助你精炼你的选择项，
-然后你可以继续输入并通过 `TAB` 来精炼，最后，minibuffer 的内容符合你的预期之后，
-按 `ENT` 选择执行。
+   当在 minibuffer 输入并按 `TAB` 之后，Emacs 会转化你在 minibuffer 的输入（比如，
+   将所有候选项共同的，但你没有完全输入的部分补到你的输入之后）帮助你精炼你的选
+   择项，然后你可以继续输入并通过 `TAB` 来精炼，最后，minibuffer 的内容符合你的
+   预期之后，按 `ENT` 选择执行。
 2) Helm 的补全则是补全窗口为中心的（ completion window centric）。
-你不需要关注 minibuffer ，只需要关注补全窗口和里面的当前高亮项。随着你的输入，补
-全窗口候选项列表会更精炼，直到你需要的候选项足够接近当前高亮项时，你可以通过
-`C-n` 移动高亮条，将它高亮并用 `ENT` 来选择它。
+   你不需要关注 minibuffer ，只需要关注补全窗口和里面的当前高亮项。随着你的输入，
+   补全窗口候选项列表会更精炼，直到你需要的候选项足够接近当前高亮项时，你可以通
+   过 `C-n` 移动高亮条，将它高亮并用 `ENT` 来选择它。
 
 * 使用
 #+BEGIN_SRC elisp
