@@ -67,6 +67,7 @@ flycheck flymake
 ** Company(Complete Anything)
 ** Anything
 ** Helm
+** Irony-Mode
 
 ** Icicles
 #+INCLUDE: "minute_emacs_icicles.org"
