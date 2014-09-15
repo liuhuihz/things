@@ -86,7 +86,7 @@ Helm 启动后，有三个键绑定你要记住：
   TAB
   #+END_QUOTE
 
-+ Use persistent actions with
++ 使用默认的（ persistent ）动作
 
   #+BEGIN_QUOTE
   C-z
@@ -104,6 +104,22 @@ C-h m
 #+END_QUOTE
 
 某些 Helm 命令有特殊的键盘映射（ keymap ），你可以通过 `C-c ?` 来访问这些信息。
+
+* 预设置的 Helm 命令概述
+
+启动 Helm 后，在 Helm 菜单里可以看到一系列设置好的命令，所有这些命令的键绑定都是
+以 =helm-command-prefix-key= 开始（默认是 `C-x c` ）。
+
+想了解更多的 Helm 命令，点击菜单上的 =helm all commands=
+（ helm-execute-helm-command ）。或者运行 helm-M-x （ `helm-command-prefix-key`
+`M-x` ）然后输入 helm 。
+
+在任何一个普通的命令比如 M-x 前键入 =helm-command-prefix-key= 将运行该命令的
+Helm 版本： helm-M-x 。如果你更钟意 Helm 版本的命令，你可以将它绑定到更方便的按
+键 M-x 。比如将下面的代码放到你的 =init.el= 里替换 Emacs 原始的绑定：
+#+BEGIN_SRC elisp
+  (global-set-key (kbd "M-x") 'helm-M-x)
+#+END_SRC
 
 
 * 参考
