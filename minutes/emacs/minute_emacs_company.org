@@ -1,0 +1,44 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Emacs 之 Company
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* 概述
+
+Company 代表 Complete anything ，是一个模块化的 buffer 内（ in-buffer ）文本补全框架。
+它使用插件式（ pluggable ）的后端（ Back-ends ）和前端（ Front-ends ）来获取和显示补全候选项。
+
+* 后端（ Back-ends ）
+
+* 前端（ Front-ends ）
+
+* 使用
+
+#+BEGIN_SRC elisp
+;; Load Company package
+(require 'company)
+
+;; Enable company mode in all buffers
+(add-hook 'after-init-hook 'global-company-mode)
+#+END_SRC
+
+在使用中，可以通过 `M-x company-mode` 来开关 company mode 。
+
+* 参考
+[[http://www.emacswiki.org/emacs/CompanyMode][EmacsWiki: CompanyMode]]

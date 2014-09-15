@@ -45,3 +45,13 @@ M-x eshell
 * 菜单（ Menu bar ）
 GUI 程序可以使用鼠标， <F10> 或者命令 menu-bar-open 操作菜单。
 终端下使用 M-` （ ESC-` ）， <F10> 或者命令 tmm-menubar 操作菜单。
+
+* 补全（ Completion ）
+
+补全在 Emacs 可以表示不同的东西。特别来说，它指在 minibuffer 中的输入补全及非 minibuffer
+缓冲区中的文本补全。 minibuffer 中的输入可以是 `M-x` 后输入的命令或者响应 minibuffer 中提示
+所输入的文本。
+
+** Minibuffer 输入补全
+
+** 缓冲区内的文本补全
