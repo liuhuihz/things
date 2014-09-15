@@ -28,6 +28,17 @@ Helm 派生（ fork ）自 anything.el 。它致力于清理 anything.el 中的�
 
 Helm 需要 Emacs 24.3 及以上版本。
 
+
+* 使用
+#+BEGIN_SRC elisp
+;; Load Helm package
+(require 'helm-config)
+
+(helm-mode 1)
+#+END_SRC
+
+在使用中，可以通过 `M-x helm-mode` 来开关 helm mode 。
+
 * 特性
 Helm （ Anything ），提供全新的 Emacs 使用体验。通常 Emacs 的使用方式是指定一个
 操作然后选择操作对象， Helm （ Anything ）的方式是先选择一个操作对象然后对这个对
@@ -49,26 +60,51 @@ Helm 的 minibuffer 补全与 Emacs 缺省的补全有些许不同。
    补全窗口候选项列表会更精炼，直到你需要的候选项足够接近当前高亮项时，你可以通
    过 `C-n` 移动高亮条，将它高亮并用 `ENT` 来选择它。
 
-** helm 心智模型（ mental model ）的关键暗示。
+3) Helm 心智模型（ mental model ）的关键含义。
 
-1) 扩展 minibuffer 的输入不需要使用 `TAB` 键。
+    1) 扩展 minibuffer 的输入不需要使用 `TAB` 键。
 
-   在 Helm 模式下， minibuffer 可能不会包含你希望的选择，所以不需要使用 `TAB` 来转化 minibuffer 中的输入。
+       在 Helm 模式下， minibuffer 可能不会包含你希望的选择，所以不需要使用 `TAB`
+       来转化 minibuffer 中的输入。
 
-2) 在 Helm 模式下， `TAB` 键被用来选择不同的动作（ action ）。
+    2) 在 Helm 模式下， `TAB` 键被用来选择不同的动作（ action ）。
 
-   在 Emacs 补全操作里，只有一个有效的动作。但 Helm 提供很多动作。
+       在 Emacs 补全操作里，只有一个有效的动作。但 Helm 提供很多动作。
 
+* 通用命令
 
-* 使用
-#+BEGIN_SRC elisp
-;; Load Helm package
-(require 'helm-config)
+Helm 只需要你记住极少的几个键绑定。
 
-(helm-mode 1)
-#+END_SRC
+默认情况下， Helm 会在 mode-line 显示最有用的几个键绑定。你也会在 Helm 缓冲区的
+头部看到一些更特定的命令。
 
-在使用中，可以通过 `M-x helm-mode` 来开关 helm mode 。
+Helm 启动后，有三个键绑定你要记住：
+
++ 访问动作菜单
+
+  #+BEGIN_QUOTE
+  TAB
+  #+END_QUOTE
+
++ Use persistent actions with
+
+  #+BEGIN_QUOTE
+  C-z
+  #+END_QUOTE
+
++ 标记候选项
+
+  #+BEGIN_QUOTE
+  M-<SPACE>
+  #+END_QUOTE
+
+需要更多的信息
+#+BEGIN_QUOTE
+C-h m
+#+END_QUOTE
+
+某些 Helm 命令有特殊的键盘映射（ keymap ），你可以通过 `C-c ?` 来访问这些信息。
+
 
 * 参考
 
