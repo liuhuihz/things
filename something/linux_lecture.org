@@ -1,0 +1,106 @@
+#+TITLE:     Linux 闲谈
+#+AUTHOR:    刘晖
+#+EMAIL:     hliu@arcsoft.com
+#+DATE:      2013-08-21 三
+#+DESCRIPTION: 从不同角度观察 Linux 系统
+#+KEYWORDS: Linux boot 进程 开发
+#+LANGUAGE:  zh_CN
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+# specifying the beamer startup gives access to a number of
+# keybindings which make configuring individual slides and components
+# of slides easier.  See, for instance, C-c C-b on a frame headline.
+#+STARTUP: beamer
+
+# we tell the exporter to use a specific LaTeX document class, as
+# defined in org-latex-classes.  By default, this does not include a
+# beamer entry so this needs to be defined in your configuration (see
+# the tutorial).
+#+LaTeX_CLASS: cn-beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+
+# Beamer supports alternate themes.  Choose your favourite here
+#+BEAMER_THEME: Madrid
+
+# for a column view of options and configurations for the individual
+# frames
+#+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
+
+* 免责声明
+  本报告中如有与事实不符的信息而造成听众在工作或非工作中被扣工资、奖金，被人鄙视，本人一律不负相关的法律和非法律责任。
+
+$ find 全世界 -iname ".txt" | grep -v xargs sed -s '/windows/linux/g'
+$ find 全世界 -iname ".txt" | xargs sed -s '/window[s]/linux/g'
+所有的窗户，不管是一个还是几个，不管单数还是复数。
+
+* 昨天 今天 明天
+LSB (Linux Standard Base)
+* 面面观
+** 启动
+内核映像与文件系统
+镜像格式
+initrd ramdisk
+LFS （Linux From Scratch） http://www.linuxfromscratch.org
+init 进程 busybox
+sysvinit upstart systemd(cgroups, udev, fanotify, timerfd, signalfd, etc) runit
+** 目录结构
+文件系统阶层式标准 (FHS) http://www.pathname.com/fhs/
+#+BEGIN_SRC shell
+liuhui@hl-dlinux:~$ ls / -l
+drwxr-xr-x   2 root root  4096 8月  16 09:41 bin
+drwxr-xr-x   4 root root  1024 8月  16 13:19 boot
+drwxr-xr-x  15 root root  3560 8月  21 15:30 dev
+drwxr-xr-x 213 root root 12288 8月  21 03:22 etc
+drwxr-xr-x   6 root root  4096 6月  21  2011 home
+drwxr-xr-x  20 root root 12288 8月  16 09:36 lib
+drwxr-xr-x   2 root root 12288 8月  16 09:35 lib32
+drwxr-xr-x   2 root root  4096 8月  16 09:36 lib64
+drwxr-xr-x   2 root root  4096 8月  16 09:36 libx32
+drwxr-xr-x   7 root root  4096 7月  24 13:27 media
+drwxr-xr-x   2 root root  4096 12月 15  2010 mnt
+drwxr-xr-x  11 root root  4096 6月   5 10:00 opt
+dr-xr-xr-x 263 root root     0 8月  16 10:07 proc
+drwx------  25 root root  4096 8月  19 14:15 root
+drwxr-xr-x  30 root root  1200 8月  21 07:48 run
+drwxr-xr-x   2 root root 12288 8月  21 03:19 sbin
+drwxr-xr-x   2 root root  4096 2月  12  2011 srv
+dr-xr-xr-x  13 root root     0 8月  16 10:07 sys
+drwxrwxrwt  20 root root 20480 8月  21 16:39 tmp
+drwxr-xr-x  15 root root  4096 5月  24 19:03 usr
+drwxr-xr-x  14 root root  4096 7月  29 17:36 var
+#+END_SRC
+sysctl /etc/sysctl.conf
+swap /proc/sys/vm/swappiness
+/proc
+/sys
+* 文件系统
+日志 小文件 压缩
+内存文件系统，启动只读
+碎片整理
+
+* 程序与进程
+ELF （Executable and Linkable Format）文件
+hte
+procenv (查看当前执行环境)
+ld ldconfig ldd readelf objdump hexdump od
+objdump:
+ -T dynamic symbols
+ -C demangle symbol name
+#+BEGIN_SRC shell
+$ objdump -TC libstdc++.so
+#+END_SRC
+静态分析 动态分析
+后台进程（daemon）
+* 开发
+工具链 交叉编译 qemu
+
+* X Window
+X11 xorg
+freedesktop.org, formerly known as the X Display Group, and the abbreviation "XDG".

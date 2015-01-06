@@ -1,0 +1,1039 @@
+
+* 嵌入式开发的术语
+目标系统（target）
+宿主系统（host）
+交叉编译（cross compile）
+工具链（toolchain）
+开发板
+调试板（debug board）
+
+* ARM (Advanced RISC Machines)
+** ARM 架构及指令集
+
+* ScratchBox2 使用
+
+#+BEGIN_SRC shell
+$ cd $HOME/buildtool
+$ cd armv5te
+$ mkdir bin dev etc lib sbin usr tmp proc sys
+$ cp -a $HOME/usr/arm-2009q3/arm-none-linux-gnueabi/libc/{etc,lib,sbin,usr,var} .
+$ cd ..
+$ sb2-init -c /usr/bin/qemu-arm armv5te arm-none-linux-gnueabi-gcc
+#+END_SRC
+sb2-init 应该在 TARGET 的根目录运行，上例中为 $HOME/buildtool。
+sb2-init 的 COMPILER 参数使用完全路径，或者确保该 COMPILER 在 path 环境变量的路径中。
+*-c* 参数中的命令路径需要使用绝对路径。否则在编译 libtool 的 configure 过程中将执行不了目标系统测试文件。
+
+#+BEGIN_SRC shell
+$ sb2 -t armv5te
+#+END_SRC
+
+* 嵌入式系统调试
+** 调试内核转储文件（coredump）
+#+BEGIN_SRC shell
+(gdb) set solib-search-path
+#+END_SRC
+
+** 使用 gdbserver 远程调试
+
+#+BEGIN_SRC shell
+$ gdbserver 172.17.186.178:3737 ./test
+
+$ gdb test
+
+(gdb) target remote 172.17.186.178:3737
+设置输出远程调试时的调试信息（gdbserver 与 gdb 之间的通信数据等）。
+(gdb) set debug remote 1
+
+(gdb) set solib-search-path
+#+END_SRC
+
+set solib-search-path /aaa/bbb
+set solib-search-path /aaa/bbb/
+have different effect?
+
+在运行机上查看 cat /proc/[pid]/maps 
+将程序运行时加载的所有模块复制到调试机目录下，然后设置 solib-search-path。
+以便调试时能找到程序需要的模块符号。
+
+libthread_db-1.0.so 问题
+libthread_db-1.0.so 与 目标系统上 libpthread.so.0 版本匹配问题。（ libpthread
+中不带符号信息似乎会导致 libthread_db 加载失败。 warning: Unable to find
+libthread_db matching inferior's thread library, thread debugging will not be available.）
+
+http://sourceware.org/ml/gdb-patches/2007-10/msg00547.html
+#+BEGIN_QUOTE
+GDB and gdbserver both use libthread_db to get extra information from
+the system libraries about threads.  For gdbserver especially, this
+is occasionally troublesome: if the connected gdb can not find the
+right copy of libpthread.so and ld.so, there's a good chance it won't
+work at all.  The symptoms are no entries in "info threads" and your
+program vanishing with an unexpected SIGTRAP the first time one of
+your threads stumbles over code with a breakpoint in it.
+#+END_QUOTE
+
+http://sourceware.org/gdb/wiki/FAQ
+#+BEGIN_QUOTE
+GDB does not see any threads besides the one in which crash occurred; or SIGTRAP kills my program when I set a breakpoint.
+
+    This frequently happen on Linux, especially on embedded targets. There are two common causes:
+       * you are using glibc, and you have stripped libpthread.so.0
+       * mismatch between libpthread.so.0 and libthread_db.so.1 
+    GDB itself does not know how to decode "thread control blocks" maintained by glibc and considered to be glibc private implementation detail. It uses libthread_db.so.1 (part of glibc) to help it do so. Therefore, libthread_db.so.1 and libpthread.so.0 must match in version and compilation flags. In addition, libthread_db.so.1 requires certain non-global symbols to be present in libpthread.so.0. Solution: use strip --strip-debug libpthread.so.0 instead of strip libpthread.so.0.
+#+END_QUOTE
+
+* GDB 使用
+** GDB 与 WinDbg
+|                      | GDB                             | WinDbg     |
+| 运行                 | run (r)                         | g          |
+| 继续执行             | continue (c)                    |            |
+| 单步执行             | next                            |            |
+| 单步执行             | step (s)                        |            |
+| 单步执行             | stepi (si)                      |            |
+| 查看反汇编           | disassemble                     |            |
+| 查看符号信息         | symbol                          |            |
+| 设置断点             | break (b)                       | bp, bm     |
+| 清除断点             | delete <N>                      | bc         |
+| 禁用断点             | disable <N>                     | bd         |
+| 使用断点             | enable <N>                      |            |
+| 列断点               | info breakpoints                | bl         |
+| 设置数据断点         | watch                           |            |
+| 使用软件数据断点     | set can-use-hw-watchpoints 0    |            |
+| 查看调用堆栈         | backtrace (bt)                  | k          |
+| 查看当前栈帧         | frame <N> (f)                   |            |
+| 查看局部变量         | info locals                     |            |
+| 查看变量值           | print (p)                       |            |
+| 查看内存             | examine (x)                     |            |
+| 查看线程             | info threads (i th)             |            |
+| 切换线程             | thread <N> (t)                  |            |
+| 重新加载符号         | nosharedlibrary                 | .reload -f |
+|                      | sharedlibrary                   |            |
+| 查看模块符号信息     | info sharedlibrary              | lm         |
+| 加载可执行文件符号表 | symbol-file                     |            |
+| 加载动态库文件符号表 | add-symbol-file                 |            |
+| 设置源文件路径       | directory <dirname> (dir)       |            |
+| 替换源文件路径       | set substitute-path <from> <to> |            |
+| 当前源文件信息       | info source                     |            |
+| 当前所有源文件信息   | info sources                    |            |
+
+* Valgrind
+valgrind, mudflap, cppcheck, mtrace
+* Others
+使用 memset（[pointer to struct], 0, sizeof([struct])) 初始化结构体中的浮点数和指针的问题。这主要是跟平台有关，有些平台上浮点数零值或者指针空值的二进制表现并非都为 0 。
+
+链接时使用静态库的时候要注意库和使用库的模块在编译命令中的顺序，如
+#+BEGIN_SRC shell
+gcc -L../cg -o test test1.c -lcg test2.c
+# 或者
+gcc -o test test1.c ../cg/libcg.a test2.c
+#+END_SRC
+假设 test1.c 中调用了 cg 静态库中的 func1，而 test2.c 中调用了 cg 静态库中的 func2。链接将会失败，因为在链接阶段，链接程序（ld）是按照命令行中出现的顺序从左至右来查找符号（symbol）的，上面例子中，在链接 cg 模块时，因为前面只有 test1 模块对 func1 的引用，没有对 func2 的引用，所以 cg 模块中的符号 func1 将被引入已定义符号集合（a set of D - symbols defined），而 func2 不会引入，而到链接 test 模块时，在已定义符号集合中没有 cg 模块的符号 func2，而后续其他模块（如果有）查找不到。所以会出现 undefined reference to ‘func2’ 的错误。所以静态库应写在命令的最后，修改命令如下方可成功。
+#+BEGIN_SRC shell
+gcc -L../cg -o test test1.c test2.c -lcg
+# 或者
+gcc -o test test1.c test2.c ../cg/libcg.a
+#+END_SRC
+
+参考：
+7.6.3 How Linkers Use Static Libraries to Resolve References
+				-- 《深入理解计算机系统》- understanding the computer system - 
+				-- Computer Systems A Programmer’s Perspective
+Linking with Static Libraries 
+				-- "Linkers and Loaders"
+
+编译时如果 LD_RUN_PATH 环境变量被设置，则用 readelf -d <目标>，可以看到生成的目标中的 dynamic section 将会加入类似下列项目（此例中 LD_RUN_PATH 通过命令 export LD_RUN_PATH=.:$LD_RUN_PATH 设置）
+0x0000000f (RPATH)                      Library rpath: [.:]
+
+dlsym 会在参数指定的库和通过之前 dlopen 自动加载的库中查找指定的符号（ symbol ），
+在这些依赖树中查找时使用的是广度优先（ breadth first ）顺序。
+
+
+* XXX
+watchdog
+client status
+crash backtrace ?
+内存池。
+senddata 下网络数据传输速率慢的问题。
+autoconf libtools
+
+configure --build --host --target 设置的不同
+Basically, $build* refer to the system compilation is
+being performed on, $host* refer to the system compiled binaries are to
+run on and $target* refer to the system compiled binaries will handle. 
+
+使用 netlink 与内核通信取得网络信息
+getcontext / setcontext 能否用来实现栈回溯
+
+设置发送组播的网络接口
+setsockopt IP_MULTICAST_IF
+
+判断网线连接状态
+socket(AF_INET, SOCK_PACKET, htons(0x0003));
+ioctl(fd_recv, SIOCGIFFLAGS, &ifr);
+NetFilter
+
+ifr.ifr_flags & IFF_RUNNING
+ifr.ifr_flags & IFF_UP
+man 7 netdevice
+
+定时器
+setitimer
+timer_create
+timerfd_create
+
+边缘触发(Edge Trigger)和条件触发(Level Trigger)
+
+d-bus netlink
+plusaudio alsa
+
+ptmalloc
+tcmalloc
+
+Books: The Art Of Computre Programming(TAOCP) SICP
+
+xmms2:
+ape cue libmac2
+
+libdbusmenu
+
+sendfile since Linux 2.2
+TCP_DEFER_ACCEPT
+
+sigaction ， signal handle 是进程全局的，任何线程产生的 signal 都会调用相应
+handle。信号处理函数执行上下文可能是任何线程上下文。
+sigmask, sigprocmask, pthread_sigmask
+mask 用于阻塞信号，使之 pendding 。接触该信号的阻塞后， pendding 的信号将触发。
+
+C tricks
+--------------------------------------------
+apr_pools.h
+头文件包含需要特性。不使用 once。
+#define APR_WANT_MEMFUNC /**< for no good reason? */
+#include "apr_want.h"
+定义默认
+#if defined(APR_POOL_DEBUG)
+/* If APR_POOL_DEBUG is blank, we get 1; if it is a number, we get -1. */
+#if (APR_POOL_DEBUG - APR_POOL_DEBUG -1 == 1)
+#undef APR_POOL_DEBUG
+#define APR_POOL_DEBUG 1
+#endif
+#else
+#define APR_POOL_DEBUG 0
+#endif
+
+Why alloca's use is discouraged
+
+[[http://stackoverflow.com/questions/1018853/why-is-alloca-not-considered-good-practice][c - Why is alloca not considered good practice?]]
+[[http://compilers.iecc.com/comparch/article/91-12-079][What's wrong with alloca()]]
+
+1) 标准 C 中并没有要求编译器实现它。在没有传统堆栈的系统中不可用，移植性不好。
+2) 
+#+begin_src c
+void DoSomething() {
+   wchar_t* pStr = alloca(100);
+   //......
+}
+
+void Process() {
+   for (i = 0; i < 1000000; i++) {
+     DoSomething();
+   }
+}
+#+end_src
+如果编译器内联 DoSomething ，则可能导致堆栈溢出。
+3) 
+#+begin_src c
+f1(alloca(100), 100, stdin);
+f2(42, alloca(10), 43);
+#+end_src
+在某些系统中 alloca 不能被用于函数调用的参数列表中，因为 alloca 分配的栈空间会出
+现在函数调用栈的参数中间，而且 alloca 调用需要调整栈指针，导致程序崩溃。
+
+google mock
+lcov gcov
+cmake
+
+
+** UTF-8
+setlocale
+linux 下使用 utf-8。
+
+** backtrace
+#include <execinfo.h>
+int backtrace(void **buffer, int size);
+char **backtrace_symbols(void *const *buffer, int size);
+void backtrace_symbols_fd(void *const *buffer, int size, int fd);
+
+
+** multilib
+使用　Sourcery G++ Lite 架构的系统。
+Sourcery G++ Lite　工具链中有几个针对不同架构优化的预编译库　（multilib），
+
+来自工具链中文档　getting-started.pdf 3.2
+#+BEGIN_QUOTE
+
+Sourcery G++ includes copies of run-time libraries that have been built with optimizations for different
+target architecture variants or other sets of build options. Each such set of libraries is referred to as
+a multilib. When you link a target application, Sourcery G++ selects the multilib matching the build
+options you have selected.
+
+#+END_QUOTE
+
+当然，并没有针对所有支持的　cpu 和 arch 都提供库。当我们使用不同 cpu 或者 arch
+等参数编译时，我们可以通过附加 -print-multi-directory 选项来得知当前编译参数会使
+用的是哪个预编译的 multilib。
+
+#+BEGIN_SRC shell
+$ arm-none-linux-gnueabi-gcc -print-multi-directory options...
+#+END_SRC
+
+** Buffer 和 Cache
+Buffer ( Buffer cache ） 和 Cache （ Page cache ）
+Buffer cache 是设备的读写缓冲，Page cache 是文件系统的读写缓冲。
+#+begin_src shell
+# free
+             total       used       free     shared    buffers     cached
+Mem:       2059820    1938472     121348          0      30952     390624
+-/+ buffers/cache:    1516896     542924
+Swap:      3903756     170020    3733736
+#+end_src
+** OOM (Out Of Memory) killer
+[[http://lwn.net/Articles/317814/][Taming the OOM killer {LWN.net}]]
+/proc/meminfo
+/proc/buddyinfo 查看内存池情况，分析内存碎片。
+/proc/slabinfo slab 分配器情况
+/proc/sys/vm/oom_kill_allocating_task
+/proc/sys/vm/overcommit_memory
+/proc/sys/vm/overcommit_ratio
+/proc/<pid>/oom_adj 类似于 nice 值，是一个加权值，取值范围为 -17 到 +15，值越高，
+越可能被 kill ，如果值为 -17 ，则不会被 OOM killer 考虑。
+/proc/<pid>/oom_score 这个值是系统综合进程的内存消耗量、 CPU 时间 (utime +
+stime) 、存活时间 (uptime - start time) 和 oom_adj 计算出的，消耗内存越多分越高，
+存活时间越长分越低。总之，总的策略是：损失最少的工作，释放最大的内存同时不伤及无
+辜的用了很大内存的进程，并且杀掉的进程数尽量少。根据进程内存使用情况，运行时间
+Linux 在计算进程的内存消耗的时候，会将子进程所耗内存（不包括他们之间共享的内存）
+的一半同时算到父进程中。
+如果一个进程的 nice 值大于 0 ，则它的得分会加倍。
+超级用户或者直接硬件访问（ direct hardware access ）的任务（ CAP_SYS_ADMIN,
+CAP_SYS_RESOURCE 或者 CAP_SYS_RAWIO ）的得分除以 4 ，这是个累积值，也就是说超级
+用户的直接硬件访问的任务得分会除以 16 。
+sysctl -a | grep ^vm
+** SLAB 分配器
+slab 分配器（ slab allocation ）是一个内存管理机制，目的是对内核对象的有效内存分
+配，消除分配、释放导致的内存碎片。它首先在 solaris 的 2.4 内核中被引入，如今广泛
+的使用于类 UNIX 操作系统中，包括 FreeBSD 和 Linux （一直做为默认的分配器，直到
+2.6.23 内核中被 SLUB 分配器取代）
+#+begin_src shell
+# cat /proc/meminfo
+MemTotal:        2059820 kB
+MemFree:          148676 kB
+Buffers:           29440 kB
+Cached:           368604 kB
+SwapCached:        14688 kB
+Active:          1229196 kB
+Inactive:         521508 kB
+Active(anon):    1082756 kB
+Inactive(anon):   391460 kB
+Active(file):     146440 kB
+Inactive(file):   130048 kB
+Unevictable:        4008 kB
+Mlocked:            4008 kB
+SwapTotal:       3903756 kB
+SwapFree:        3739744 kB
+Dirty:                28 kB
+Writeback:            64 kB
+AnonPages:       1345916 kB
+Mapped:           109532 kB
+Shmem:            118848 kB
+Slab:              77384 kB
+SReclaimable:      40960 kB
+SUnreclaim:        36424 kB
+KernelStack:        3128 kB
+PageTables:        29096 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     4933664 kB
+Committed_AS:    3076796 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      114312 kB
+VmallocChunk:   34359621116 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:     1301376 kB
+DirectMap2M:      794624 kB
+
+# cat /proc/slabinfo
+slabinfo - version: 2.1
+# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab> : tunables <limit> <batchcount> <sharedfactor> : slabdata <active_slabs> <num_slabs> <sharedavail>
+cifs_small_rq         32     40    448    8    1 : tunables   54   27    8 : slabdata      5      5      0
+cifs_request           8      8  16512    1    8 : tunables    8    4    0 : slabdata      8      8      0
+cifs_mpx_ids           3     30    128   30    1 : tunables  120   60    8 : slabdata      1      1      0
+cifs_inode_cache      30     36    672    6    1 : tunables   54   27    8 : slabdata      6      6      0
+fuse_request           0      0    608    6    1 : tunables   54   27    8 : slabdata      0      0      0
+fuse_inode             1     11    704   11    2 : tunables   54   27    8 : slabdata      1      1      0
+nfsd4_delegations      0      0    368   10    1 : tunables   54   27    8 : slabdata      0      0      0
+nfsd4_stateids         0      0    120   32    1 : tunables  120   60    8 : slabdata      0      0      0
+nfsd4_files            0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+nfsd4_lockowners       0      0    368   10    1 : tunables   54   27    8 : slabdata      0      0      0
+nfsd4_openowners       0      0    392   10    1 : tunables   54   27    8 : slabdata      0      0      0
+nfs_direct_cache       0      0    136   28    1 : tunables  120   60    8 : slabdata      0      0      0
+nfs_write_data        36     36    832    9    2 : tunables   54   27    8 : slabdata      4      4      0
+nfs_read_data          0      0    768    5    1 : tunables   54   27    8 : slabdata      0      0      0
+nfs_inode_cache        0      0   1000    4    1 : tunables   54   27    8 : slabdata      0      0      0
+nfs_page               0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+fscache_cookie_jar      6     53     72   53    1 : tunables  120   60    8 : slabdata      1      1      0
+rpc_buffers            8      8   2048    2    1 : tunables   24   12    8 : slabdata      4      4      0
+rpc_tasks              8     15    256   15    1 : tunables  120   60    8 : slabdata      1      1      0
+rpc_inode_cache        8      8    832    4    1 : tunables   54   27    8 : slabdata      2      2      0
+ext4_groupinfo_1k     12     30    128   30    1 : tunables  120   60    8 : slabdata      1      1      0
+jbd2_1k                0      0   1024    4    1 : tunables   54   27    8 : slabdata      0      0      0
+nvidia_p2p_page_t      0      0     32  112    1 : tunables  120   60    8 : slabdata      0      0      0
+nv_pte_t            1703   1749     72   53    1 : tunables  120   60    8 : slabdata     33     33      0
+nv_stack_t           260    260  12288    1    4 : tunables    8    4    0 : slabdata    260    260      0
+ext4_groupinfo_4k    696    728    136   28    1 : tunables  120   60    8 : slabdata     26     26      0
+ext4_inode_cache   17902  20120    872    4    1 : tunables   54   27    8 : slabdata   5030   5030      0
+ext4_xattr             0      0     88   44    1 : tunables  120   60    8 : slabdata      0      0      0
+ext4_free_data        48    134     56   67    1 : tunables  120   60    8 : slabdata      2      2      0
+ext4_allocation_context     22     28    136   28    1 : tunables  120   60    8 : slabdata      1      1      0
+ext4_prealloc_space     42    185    104   37    1 : tunables  120   60    8 : slabdata      5      5      0
+ext4_system_zone       0      0     40   92    1 : tunables  120   60    8 : slabdata      0      0      0
+ext4_io_end           11     12   1128    3    1 : tunables   24   12    8 : slabdata      4      4      0
+ext4_io_page          32    202     16  202    1 : tunables  120   60    8 : slabdata      1      1      0
+jbd2_inode          1081   2002     48   77    1 : tunables  120   60    8 : slabdata     26     26      0
+jbd2_journal_handle     36    144     24  144    1 : tunables  120   60    8 : slabdata      1      1      0
+jbd2_journal_head     66    170    112   34    1 : tunables  120   60    8 : slabdata      5      5      0
+jbd2_revoke_table     10    202     16  202    1 : tunables  120   60    8 : slabdata      1      1      0
+jbd2_revoke_record      0      0     32  112    1 : tunables  120   60    8 : slabdata      0      0      0
+sd_ext_cdb             2    112     32  112    1 : tunables  120   60    8 : slabdata      1      1      0
+scsi_sense_cache      68     90    128   30    1 : tunables  120   60    8 : slabdata      3      3      0
+scsi_cmd_cache        14     75    256   15    1 : tunables  120   60    8 : slabdata      5      5      0
+uhci_urb_priv          2     67     56   67    1 : tunables  120   60    8 : slabdata      1      1      0
+sgpool-128             2      2   4096    1    1 : tunables   24   12    8 : slabdata      2      2      0
+sgpool-64              2      2   2048    2    1 : tunables   24   12    8 : slabdata      1      1      0
+sgpool-32              2      4   1024    4    1 : tunables   54   27    8 : slabdata      1      1      0
+sgpool-16              2      8    512    8    1 : tunables   54   27    8 : slabdata      1      1      0
+sgpool-8              40     60    256   15    1 : tunables  120   60    8 : slabdata      4      4      0
+scsi_data_buffer       0      0     24  144    1 : tunables  120   60    8 : slabdata      0      0      0
+fib6_nodes             8     59     64   59    1 : tunables  120   60    8 : slabdata      1      1      0
+ip6_dst_cache          6     24    320   12    1 : tunables   54   27    8 : slabdata      2      2      0
+ndisc_cache            3      8    448    8    1 : tunables   54   27    8 : slabdata      1      1      0
+ip6_mrt_cache          0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+RAWv6                  7      7   1088    7    2 : tunables   24   12    8 : slabdata      1      1      0
+UDPLITEv6              0      0   1024    4    1 : tunables   54   27    8 : slabdata      0      0      0
+UDPv6                 29     32   1024    4    1 : tunables   54   27    8 : slabdata      8      8      0
+tw_sock_TCPv6          0      0    320   12    1 : tunables   54   27    8 : slabdata      0      0      0
+request_sock_TCPv6      0      0    192   20    1 : tunables  120   60    8 : slabdata      0      0      0
+TCPv6                 14     14   1920    2    1 : tunables   24   12    8 : slabdata      7      7      0
+flow_cache             0      0    104   37    1 : tunables  120   60    8 : slabdata      0      0      0
+btree_node             0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+cfq_io_context       176    240    128   30    1 : tunables  120   60    8 : slabdata      8      8      0
+cfq_queue            156    221    232   17    1 : tunables  120   60    8 : slabdata     13     13      0
+bsg_cmd                0      0    312   12    1 : tunables   54   27    8 : slabdata      0      0      0
+mqueue_inode_cache      1      4    896    4    1 : tunables   54   27    8 : slabdata      1      1      0
+hugetlbfs_inode_cache      1     13    592   13    2 : tunables   54   27    8 : slabdata      1      1      0
+dquot                  0      0    256   15    1 : tunables  120   60    8 : slabdata      0      0      0
+kioctx                 0      0    384   10    1 : tunables   54   27    8 : slabdata      0      0      0
+kiocb                  0      0    256   15    1 : tunables  120   60    8 : slabdata      0      0      0
+fanotify_response_event      0      0     32  112    1 : tunables  120   60    8 : slabdata      0      0      0
+fsnotify_mark          0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+inotify_event_private_data     68    112     32  112    1 : tunables  120   60    8 : slabdata      1      1      0
+inotify_inode_mark     98    140    136   28    1 : tunables  120   60    8 : slabdata      5      5      0
+dnotify_mark           1     28    136   28    1 : tunables  120   60    8 : slabdata      1      1      0
+dnotify_struct         1    112     32  112    1 : tunables  120   60    8 : slabdata      1      1      0
+dio                    0      0    640    6    1 : tunables   54   27    8 : slabdata      0      0      0
+fasync_cache           5     77     48   77    1 : tunables  120   60    8 : slabdata      1      1      0
+khugepaged_mm_slot      0      0     40   92    1 : tunables  120   60    8 : slabdata      0      0      0
+ksm_mm_slot            0      0     48   77    1 : tunables  120   60    8 : slabdata      0      0      0
+ksm_stable_node        0      0     40   92    1 : tunables  120   60    8 : slabdata      0      0      0
+ksm_rmap_item          0      0     64   59    1 : tunables  120   60    8 : slabdata      0      0      0
+pid_namespace          0      0   2120    3    2 : tunables   24   12    8 : slabdata      0      0      0
+user_namespace         0      0   1072    7    2 : tunables   24   12    8 : slabdata      0      0      0
+posix_timers_cache      1     22    176   22    1 : tunables  120   60    8 : slabdata      1      1      0
+uid_cache             12     30    128   30    1 : tunables  120   60    8 : slabdata      1      1      0
+UNIX                 489    513    832    9    2 : tunables   54   27    8 : slabdata     57     57     27
+ip_mrt_cache           0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+UDP-Lite               0      0    832    9    2 : tunables   54   27    8 : slabdata      0      0      0
+tcp_bind_bucket       44    177     64   59    1 : tunables  120   60    8 : slabdata      3      3      0
+inet_peer_cache      175    320    192   20    1 : tunables  120   60    8 : slabdata     16     16      0
+secpath_cache          0      0     64   59    1 : tunables  120   60    8 : slabdata      0      0      0
+xfrm_dst_cache         0      0    448    8    1 : tunables   54   27    8 : slabdata      0      0      0
+ip_fib_trie            8     67     56   67    1 : tunables  120   60    8 : slabdata      1      1      0
+ip_fib_alias           9     77     48   77    1 : tunables  120   60    8 : slabdata      1      1      0
+ip_dst_cache         420    975    256   15    1 : tunables  120   60    8 : slabdata     65     65      0
+arp_cache              4     16    448    8    1 : tunables   54   27    8 : slabdata      2      2      0
+PING                   0      0    832    9    2 : tunables   54   27    8 : slabdata      0      0      0
+RAW                    5      9    832    9    2 : tunables   54   27    8 : slabdata      1      1      0
+UDP                   36     72    832    9    2 : tunables   54   27    8 : slabdata      7      8      0
+tw_sock_TCP            0      0    256   15    1 : tunables  120   60    8 : slabdata      0      0      0
+request_sock_TCP       0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+TCP                   36     48   1728    4    2 : tunables   24   12    8 : slabdata     12     12      0
+eventpoll_pwq        191    265     72   53    1 : tunables  120   60    8 : slabdata      5      5      0
+eventpoll_epi        191    270    128   30    1 : tunables  120   60    8 : slabdata      9      9      0
+blkdev_integrity       0      0    112   34    1 : tunables  120   60    8 : slabdata      0      0      0
+blkdev_queue          17     18   1872    2    1 : tunables   24   12    8 : slabdata      9      9      0
+blkdev_requests       62     90    368   10    1 : tunables   54   27    8 : slabdata      7      9      0
+blkdev_ioc           205    265     72   53    1 : tunables  120   60    8 : slabdata      5      5      0
+fsnotify_event_holder     67    144     24  144    1 : tunables  120   60    8 : slabdata      1      1      0
+fsnotify_event        29     68    112   34    1 : tunables  120   60    8 : slabdata      2      2      0
+bio-0                 24    100    192   20    1 : tunables  120   60    8 : slabdata      5      5      0
+biovec-256             2      2   4096    1    1 : tunables   24   12    8 : slabdata      2      2      0
+biovec-128             9     10   2048    2    1 : tunables   24   12    8 : slabdata      5      5      0
+biovec-64              0      0   1024    4    1 : tunables   54   27    8 : slabdata      0      0      0
+biovec-16              0     15    256   15    1 : tunables  120   60    8 : slabdata      0      1      0
+bip-256                2      2   4224    1    2 : tunables    8    4    0 : slabdata      2      2      0
+bip-128                0      0   2176    3    2 : tunables   24   12    8 : slabdata      0      0      0
+bip-64                 0      0   1152    7    2 : tunables   24   12    8 : slabdata      0      0      0
+bip-16                 0      0    384   10    1 : tunables   54   27    8 : slabdata      0      0      0
+bip-4                  0      0    192   20    1 : tunables  120   60    8 : slabdata      0      0      0
+bip-1                  0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+sock_inode_cache     613    654    640    6    1 : tunables   54   27    8 : slabdata    109    109      1
+skbuff_fclone_cache     55     98    512    7    1 : tunables   54   27    8 : slabdata     13     14      0
+skbuff_head_cache    369    405    256   15    1 : tunables  120   60    8 : slabdata     27     27     60
+file_lock_cache       79     80    192   20    1 : tunables  120   60    8 : slabdata      4      4      0
+net_namespace          0      0   2560    3    2 : tunables   24   12    8 : slabdata      0      0      0
+shmem_inode_cache   1223   1290    656    6    1 : tunables   54   27    8 : slabdata    215    215      0
+Acpi-Operand        1445   1537     72   53    1 : tunables  120   60    8 : slabdata     29     29      0
+Acpi-ParseExt          0      0     72   53    1 : tunables  120   60    8 : slabdata      0      0      0
+Acpi-Parse             0      0     48   77    1 : tunables  120   60    8 : slabdata      0      0      0
+Acpi-State             0      0     80   48    1 : tunables  120   60    8 : slabdata      0      0      0
+Acpi-Namespace       623    644     40   92    1 : tunables  120   60    8 : slabdata      7      7      0
+task_delay_info      689    748    112   34    1 : tunables  120   60    8 : slabdata     22     22     60
+taskstats             59     60    328   12    1 : tunables   54   27    8 : slabdata      5      5      0
+proc_inode_cache    2659   2688    616    6    1 : tunables   54   27    8 : slabdata    448    448     27
+sigqueue             253    312    160   24    1 : tunables  120   60    8 : slabdata     13     13      0
+bdev_cache            22     35    768    5    1 : tunables   54   27    8 : slabdata      7      7      0
+sysfs_dir_cache    13211  13230    144   27    1 : tunables  120   60    8 : slabdata    490    490      0
+mnt_cache             35     45    256   15    1 : tunables  120   60    8 : slabdata      3      3      0
+filp                8175   8745    256   15    1 : tunables  120   60    8 : slabdata    583    583    420
+inode_cache         3724   3745    552    7    1 : tunables   54   27    8 : slabdata    535    535      0
+dentry             18828  38620    192   20    1 : tunables  120   60    8 : slabdata   1931   1931     30
+names_cache           71     71   4096    1    1 : tunables   24   12    8 : slabdata     71     71     12
+key_jar                2     20    192   20    1 : tunables  120   60    8 : slabdata      1      1      0
+buffer_head        13736  36334    104   37    1 : tunables  120   60    8 : slabdata    982    982     48
+nsproxy                1     77     48   77    1 : tunables  120   60    8 : slabdata      1      1      0
+vm_area_struct     23746  24552    176   22    1 : tunables  120   60    8 : slabdata   1116   1116    360
+mm_struct            239    256    960    4    1 : tunables   54   27    8 : slabdata     64     64     27
+fs_cache             417    472     64   59    1 : tunables  120   60    8 : slabdata      8      8     60
+files_cache          233    275    704   11    2 : tunables   54   27    8 : slabdata     25     25      0
+signal_cache         288    294   1088    7    2 : tunables   24   12    8 : slabdata     42     42     12
+sighand_cache        279    285   2112    3    2 : tunables   24   12    8 : slabdata     95     95     12
+task_xstate          434    456    512    8    1 : tunables   54   27    8 : slabdata     57     57      0
+task_struct          454    464   1776    4    2 : tunables   24   12    8 : slabdata    116    116     24
+cred_jar             964   1660    192   20    1 : tunables  120   60    8 : slabdata     83     83    180
+anon_vma_chain     16637  18172     48   77    1 : tunables  120   60    8 : slabdata    236    236    360
+anon_vma            9844  10384     64   59    1 : tunables  120   60    8 : slabdata    176    176    240
+pid                  704    720    128   30    1 : tunables  120   60    8 : slabdata     24     24      0
+shared_policy_node      0      0     48   77    1 : tunables  120   60    8 : slabdata      0      0      0
+numa_policy            0      0     24  144    1 : tunables  120   60    8 : slabdata      0      0      0
+radix_tree_node     5312   7973    560    7    1 : tunables   54   27    8 : slabdata   1139   1139     13
+idr_layer_cache      625    658    544    7    1 : tunables   54   27    8 : slabdata     94     94      0
+size-4194304(DMA)      0      0 4194304    1 1024 : tunables    1    1    0 : slabdata      0      0      0
+size-4194304           0      0 4194304    1 1024 : tunables    1    1    0 : slabdata      0      0      0
+size-2097152(DMA)      0      0 2097152    1  512 : tunables    1    1    0 : slabdata      0      0      0
+size-2097152           0      0 2097152    1  512 : tunables    1    1    0 : slabdata      0      0      0
+size-1048576(DMA)      0      0 1048576    1  256 : tunables    1    1    0 : slabdata      0      0      0
+size-1048576           0      0 1048576    1  256 : tunables    1    1    0 : slabdata      0      0      0
+size-524288(DMA)       0      0 524288    1  128 : tunables    1    1    0 : slabdata      0      0      0
+size-524288            0      0 524288    1  128 : tunables    1    1    0 : slabdata      0      0      0
+size-262144(DMA)       0      0 262144    1   64 : tunables    1    1    0 : slabdata      0      0      0
+size-262144            0      0 262144    1   64 : tunables    1    1    0 : slabdata      0      0      0
+size-131072(DMA)       0      0 131072    1   32 : tunables    8    4    0 : slabdata      0      0      0
+size-131072            4      4 131072    1   32 : tunables    8    4    0 : slabdata      4      4      0
+size-65536(DMA)        0      0  65536    1   16 : tunables    8    4    0 : slabdata      0      0      0
+size-65536             7      7  65536    1   16 : tunables    8    4    0 : slabdata      7      7      0
+size-32768(DMA)        0      0  32768    1    8 : tunables    8    4    0 : slabdata      0      0      0
+size-32768            15     15  32768    1    8 : tunables    8    4    0 : slabdata     15     15      0
+size-16384(DMA)        0      0  16384    1    4 : tunables    8    4    0 : slabdata      0      0      0
+size-16384           302    307  16384    1    4 : tunables    8    4    0 : slabdata    302    307      0
+size-8192(DMA)         0      0   8192    1    2 : tunables    8    4    0 : slabdata      0      0      0
+size-8192             94    107   8192    1    2 : tunables    8    4    0 : slabdata     94    107      0
+size-4096(DMA)         0      0   4096    1    1 : tunables   24   12    8 : slabdata      0      0      0
+size-4096            340    340   4096    1    1 : tunables   24   12    8 : slabdata    340    340      0
+size-2048(DMA)         0      0   2048    2    1 : tunables   24   12    8 : slabdata      0      0      0
+size-2048            406    406   2048    2    1 : tunables   24   12    8 : slabdata    203    203     24
+size-1024(DMA)         0      0   1024    4    1 : tunables   54   27    8 : slabdata      0      0      0
+size-1024           1426   1440   1024    4    1 : tunables   54   27    8 : slabdata    360    360     27
+size-512(DMA)          0      0    512    8    1 : tunables   54   27    8 : slabdata      0      0      0
+size-512            1547   1608    512    8    1 : tunables   54   27    8 : slabdata    201    201    108
+size-256(DMA)          0      0    256   15    1 : tunables  120   60    8 : slabdata      0      0      0
+size-256            1385   1590    256   15    1 : tunables  120   60    8 : slabdata    106    106      3
+size-192(DMA)          0      0    192   20    1 : tunables  120   60    8 : slabdata      0      0      0
+size-192            3183   3400    192   20    1 : tunables  120   60    8 : slabdata    170    170      0
+size-128(DMA)          0      0    128   30    1 : tunables  120   60    8 : slabdata      0      0      0
+size-64(DMA)           0      0     64   59    1 : tunables  120   60    8 : slabdata      0      0      0
+size-64             6796   7139     64   59    1 : tunables  120   60    8 : slabdata    121    121    120
+size-32(DMA)           0      0     32  112    1 : tunables  120   60    8 : slabdata      0      0      0
+size-128            5116   5280    128   30    1 : tunables  120   60    8 : slabdata    176    176     16
+size-32             9846   9968     32  112    1 : tunables  120   60    8 : slabdata     89     89      0
+kmem_cache           200    220    192   20    1 : tunables  120   60    8 :
+slabdata     11     11      0
+
+# cat /proc/buddyinfo
+Node 0, zone      DMA      9      3      3     18     15      3      3      3      2      1      0 
+Node 0, zone    DMA32  10104   4916   1232    366    117     59     12      5      0      1      1 
+#+end_src
+** Buddy 伙伴系统
+** malloc kmalloc vmalloc
+32 位系统为例，进程虚拟内存空间为 4G ，其中前 3G 为用户虚拟内存区域，后面 1G 为
+内核虚拟内存区域（所有进程共用）。
+系统内核虚拟内存区域的布局 （假设系统物理内存为 128M）：
+0xC0000000 ～ 0xC8000000 ：物理内存直接映射地址区域。结束地址为（0xC0000000 + 128M）。
+0xC8000000 ～ 0xC8800000 ：起始地址为 high_memory，结束地址为 VMALLOC_START =
+high_memory + VMALLOC_OFFSET，是一个 8M 的间隔（gap），防止内存越界。
+
+** udev
+** kernel module: /sys/module
+device driver: /sys/bus/platform/drivers
+device: /sys/bus/platform/devices
+bind, unbind to load/unload driver for device. http://lwn.net/Articles/143397/
+* NFS
+/etc/exports
+
+mount -t nfs [remote host]:[remote path] [local path]
+有些平台可以需要加 nolock 的选项
+mount -t nfs -o nolock [remote host]:[remote path] [local path]
+
+比如：
+#+BEGIN_SRC shell
+
+# mount -t nfs 172.17.165.182:/opt/nfs /mnt/nfs
+
+#+END_SRC
+
+* locale and iconv
+locale -a
+locale -m
+locale charmap
+localedef
+localeconv
+/usr/share/i18n
+iconv --list
+nl_langinfo
+#+BEGIN_SRC c
+BOOL utf8_mode = FALSE;
+if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
+   utf8_mode = TRUE;
+#+END_SRC
+
+windows NTFS 文件系统内部使用 16 位存储类似文件名等数据。在加载（mount）类似
+NTFS 系统时，需要进行转换，将文件名等转换成 UTF-8 。
+* Pulse Audio, ESD, ALSA, OSS
+http://blog.csdn.net/chaolumon/article/details/6052022
+http://www.linuxsir.org/bbs/thread356984.html
+http://forum.ubuntu.com.cn/viewtopic.php?t=163776
+http://ubuntuforums.org/showthread.php?p=4928900
+OSS 和 ALSA 是 Linux 内核中的声卡硬件驱动。
+ESD 和 Pulse Audio 是应用层的两个声音服务器，软件应用将声音送给声音服务器，声音
+服务器进行处理，比如混音等。然后再发送给驱动控制声卡设备发出声音。当然，驱动本身
+也可以自己进行混音等处理，比如 ALSA mixer 。
+
+/proc/asound/cards
+
+* /dev/input/event* input_event /sys/class/input /proc/bus/input /sys/devices/virtual/input
+* /sys/class/gpio /sys/devices/virtual/gpio
+* /sys/class/net/wlan0/address
+* Weak symbol
+A weak symbol denotes a specially annotated symbol during linking of elf object
+files. By default, without any annotation, a symbol in an object file is strong.
+During linking, a strong symbol can override a weak symbol of the same name. In
+contrast, 2 strong symbols that share a name yield a link error during
+compile-time. When linking a binary executable, a weakly declared symbol does
+not need a definition. In comparison, (by default) a declared strong symbol
+without a definition triggers an undefined symbol link error.
+
+Weak symbols are not mentioned by C or C++ language standards; as such,
+inserting them into code is not very portable. Even if two platforms support the
+same or similar syntax for marking symbols as weak, the semantics may differ in
+subtle points, e.g. if weak symbols during dynamic linking at runtime lose their
+semantics or not.
+#+BEGIN_SRC c
+  // function declaration
+  int __attribute__((weak)) power2(int x);
+
+  // or
+  int power2(int x) __attribute__((weak));
+
+  // variable declaration;
+  extern int __attribute__((weak)) global_var;
+#+END_SRC
+
+Weak symbols can be used as an mechanism to provide default implementations of
+functions that can be replaced by more specialized (e.g. optimized) ones at
+link-time. The default implementation is then declared as weak and on certain
+targets object files with strongly declared symbols are added to the linker
+command line.
+
+If a library defines a symbol as weak, a program that links that library is free
+to provide a strong one for - say - customization purposes.
+
+Another use case for weak symbols is the maintenance of binary backward
+compatibility.
+
+Using weak symbols in static libraries has other semantics than in shared ones,
+i.e. with a static library the symbol lookup stops at the first symbol - even if
+it is just weak and an object file with a strong symbol is also included in the
+library archive. On Linux, the linker option --whole-archive changes that
+behavior.
+
+** weak alias
+#+BEGIN_SRC c
+  /* foo.c */
+  /* Do some thing. */
+  int __foo() {
+      puts("I do no thing.");
+  }
+
+  int f1() __attribute__ ((weak, alias("__foo")));
+
+  // or
+  #define weak_alias_v2(name1, name2)             \
+      asm(".weak " #name2 "; " #name2 "=" #name1)
+
+  weak_alias_v2(__foo, f2);
+
+  // or
+  #define weak_alias_v3(name1, name2)             \
+      asm(".weak\t" #name2 "\n"                   \
+          ".set\t" #name2 "," #name1)
+
+  weak_alias_v3(__foo, f3);
+#+END_SRC
+weak 和 alias 分别是两个属性。weak 使得 f1 这个符号在目标文件中作为 weak symbol
+而不是 global symbol。用 nm 命令查看编译 dummy.c 生成的目标文件可用看到 f1 是一
+个 weak symbol，它前面的标记是 W。
+#+BEGIN_SRC sh
+  $ cc -c -g -o foo.o foo.c
+  $ nm foo.o
+  0000000000000000 W f1
+  0000000000000000 W f2
+  0000000000000000 W f3
+  0000000000000000 T __foo
+                   U puts
+#+END_SRC
+
+** weak reference
+#+BEGIN_SRC c
+    /* weakref.c */
+    #include <stdio.h>
+
+    #ifndef NO_WEAKREFERENCE_DEF
+    int bar()
+    {
+        printf("Test weak reference!\n");
+    }
+    #endif
+
+    static int foo() __attribute__ ((weakref("bar")));
+
+    int main()
+    {
+        if (foo) {
+            foo();
+        } else {
+            printf("No!\n");
+        }
+    }
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ cc -g -o weakref weakref.c
+  $ ./weakref
+  Test weak reference!
+  $ nm weakref | grep bar
+  0000000000400506 T bar
+
+  $ cc -DNO_WEAKREFERENCE_DEF -g -o weakref weakref.c
+  $ ./weakref
+  No!
+  $ nm weakref | grep bar
+                   w bar
+#+END_SRC
+
+#+BEGIN_SRC c
+  static int foo() __attribute__ ((weakref("bar")));
+  /* is equivalent to... */
+  static int foo() __attribute__ ((weak, weakref, alias("bar")));
+  /* and to... */
+  static int foo() __attribute__ ((weakref));
+  static int foo() __attribute__ ((alias("bar")));
+#+END_SRC
+
+* Visibility of symbol
+Visibility has *default*, *internal*, *hidden* and *protected*.
+#+BEGIN_SRC c
+  int foo() __attribute__ ((visibility("hidden")));
+#+END_SRC
+* 信号 signal
+信号本质上是软件层次上对中断的一种模拟，它是一种异步通信的处理机制。
+
+信号来源
+1. 程序错误，如非法访问内存。
+2. 外部信号，如按下 CTRL-C 。
+3. 通过 kill 或 sigqueue 向另外一个进程发送信号。
+
+信号生命周期
+** 不可靠信号、可靠信号，非实时信号、实时信号
+** 信号屏蔽（进程，线程）
+* 时钟
+  Epoch
+  精度
+  闰秒（ leap second ）
+  man clock
+  man clock_gettime
+  man 7 time
+  man rtc
+  + 硬时钟
+  + 软时钟
+    - 系统范围
+    - 进程范围
+
+  CLOCK_REALTIME
+  挂钟（ wall-clock ）
+  CLOCK_MONOTONIC
+  CLOCK_REALTIME_COARSE (since Linux 2.6.32; Linux-specific)
+  CLOCK_MONOTONIC_COARSE (since Linux 2.6.32; Linux-specific)
+  CLOCK_MONOTONIC_RAW (since Linux 2.6.28; Linux-specific)
+  CLOCK_BOOTTIME (since Linux 2.6.39; Linux-specific)
+  CLOCK_PROCESS_CPUTIME_ID (since Linux 2.6.12)
+  CLOCK_THREAD_CPUTIME_ID (since Linux 2.6.12)
+  #+BEGIN_SRC sh
+    $ perl -w -MTime::HiRes=clock_gettime,CLOCK_MONOTONIC -E 'say clock_gettime(CLOCK_MONOTONIC)'
+  #+END_SRC
+  #+BEGIN_SRC c
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <time.h>
+    #include <errno.h>
+    #include <string.h>
+    
+    #define _CLOCK_ITEM(c)  { #c, c }
+    
+    #define _CHK_TIMES      3
+    
+    struct {
+      const char *name;
+      clockid_t id;
+    } all_clocks[] = {
+    #ifdef CLOCK_REALTIME
+      /* Identifier for system-wide realtime clock.  */
+      _CLOCK_ITEM(CLOCK_REALTIME),
+    #endif
+    #ifdef CLOCK_MONOTONIC
+      /* Monotonic system-wide clock.  */
+      _CLOCK_ITEM(CLOCK_MONOTONIC),
+    #endif
+    #ifdef CLOCK_PROCESS_CPUTIME_ID
+      /* High-resolution timer from the CPU.  */
+      _CLOCK_ITEM(CLOCK_PROCESS_CPUTIME_ID),
+    #endif
+    #ifdef CLOCK_THREAD_CPUTIME_ID
+      /* Thread-specific CPU-time clock.  */
+      _CLOCK_ITEM(CLOCK_THREAD_CPUTIME_ID),
+    #endif
+    #ifdef CLOCK_MONOTONIC_RAW
+      /* Monotonic system-wide clock, not adjusted for frequency scaling.  */
+      _CLOCK_ITEM(CLOCK_MONOTONIC_RAW),
+    #endif
+    #ifdef CLOCK_REALTIME_COARSE
+      /* Identifier for system-wide realtime clock, updated only on ticks.  */
+      _CLOCK_ITEM(CLOCK_REALTIME_COARSE),
+    #endif
+    #ifdef CLOCK_MONOTONIC_COARSE
+      /* Monotonic system-wide clock, updated only on ticks.  */
+      _CLOCK_ITEM(CLOCK_MONOTONIC_COARSE),
+    #endif
+    #ifdef CLOCK_BOOTTIME
+      /* Monotonic system-wide clock that includes time spent in suspension.  */
+      _CLOCK_ITEM(CLOCK_BOOTTIME),
+    #endif
+    #ifdef CLOCK_REALTIME_ALARM
+      /* Like CLOCK_REALTIME but also wakes suspended system.  */
+      _CLOCK_ITEM(CLOCK_REALTIME_ALARM),
+    #endif
+    #ifdef CLOCK_BOOTTIME_ALARM
+      /* Like CLOCK_BOOTTIME but also wakes suspended system.  */
+      _CLOCK_ITEM(CLOCK_BOOTTIME_ALARM),
+    #endif
+      { NULL, (clockid_t)0 },
+    };
+    
+    int main(int argc, char *argv[])
+    {
+      (void)argc;
+      (void)argv;
+    
+      int i, j;
+      struct timespec res;
+    
+      for (i = 0; NULL != all_clocks[i].name; i ++) {
+        int ret;
+    
+        printf("%s:\n", all_clocks[i].name);
+        ret = clock_getres(all_clocks[i].id, &res);
+        if (0 == ret) {
+          printf("\t%-15s %10ld seconds, %10ld nonoseconds\n", "Resolution: ", res.tv_sec, res.tv_nsec);
+          for (j = 0; j < _CHK_TIMES; j ++) {
+            ret = clock_gettime(all_clocks[i].id, &res);
+            if (0 == ret) {
+              printf("\t%-15s %10ld seconds, %10ld nonoseconds\n", "Now: ", res.tv_sec, res.tv_nsec);
+            }
+          }
+          printf("\n");
+        } else {
+          printf("FAILED(%s)\n\n", strerror(errno));
+        }
+      }
+    
+      return 0;
+    }
+    
+  #+END_SRC
+* Flash
+  Flash memory 是一种电子的非易失性（ non-volatile memory NVRAM ）的计算机存储媒
+  介，可被电子擦除和重写（ reprogram ）。
+
+  Flash 的内部存储是 MOSFET ，里面有个悬浮门（ Floating Gate ），是真正存储数据
+  的单元。
+
+  Flash 的擦除操作是以块（ block ）为单位的，常见的块的大小是 128KB/256KB 等，与
+  此相对应的是其它很多存储设备，是以 bit 位为最小读取/写入的单位， Flash 是一次
+  性地擦除整个块，将一个块的内容全部擦除为 0xFF 。相对来说，擦除用的时间很短，可
+  以用一闪而过来形容，所以，称为 Flash Memory 。一般将 Flash 翻译为 （快速）闪存。
+
+  NOR Flash 本身为读取操作（支持随机存取）提供外部寻址总线；至于解锁、抹除与写入
+  则须以区块-区块（ Block-by-block ）的方式进行，典型的区块大小为 64 、 128 或
+  256 字节。 NAND Flash 所有的动作都必须以区块性基础（ Block-wise fashion ）运行，
+  包含读、写、解锁与抹除。
+
+  Flash 即使它可以单一字节的方式读或写入，但是抹除一定是一整个区块。初始时区块内
+  的所有字节都是 1 ，也可以将任何一个字节改写成 0 ，但是，一旦需要将某个字节从 0
+  改写成 1 ，则需要先清除整个区块。也就是说闪存（特别是 NOR Flash ）能提供随机读
+  取与写入操作，却无法提供任意的随机改写。
+
+  从 NOR Flash 读取数据的方式与从 RAM 读取数据相近，只要提供数据的地址，数据总线
+  就可以正确的导出数据。基于以上原因，多数微处理器可以将 NOR Flash 当作原地运行
+  （ Execute in place ， XIP ）存储器使用，这意味着存储在 NOR Flash 上的程序不需
+  复制到RAM就可以直接运行。
+
+  NAND Flash 的物理划分为块（ Block ），每个块中包含若干页（ Page ），每页大小为
+  512 + 16 字节（也有 256 + 8 字节、 2K + 64 字节等规格），其中 512 字节为一般储
+  存数据区域， 16 字节为 Spare area 或称 OOB （ Out of Band ）区。通常在 OOB 区
+  存放坏快标记、前面 512 字节的 ECC 校验码等。
+
+  cramfs ， jffs2 等文件系统映像文件中没有 OOB 区的内容。大小通常是 512 的整数倍
+  。烧入 NOR Flash 时，是简单的平铺。烧入 NAND Flash 时，写入 512 字节页数据后，
+  要计算 ECC 校验，写入 OOB 。
+  yaffs 文件系统映像文件中包含 OOB 区数据。大小通常为 512 + 16 的整数倍。写入
+  512 页数据后，不需要计算 ECC 校验，将映像中的 OOB 数据写入 Flash OOB 中即可。
+  注意：烧写 yaffs 文件系统映像时，分区上第一个可用的块（不是坏快）也要跳过。
+
+  |                  | NAND         | NOR            |
+  |------------------+--------------+----------------|
+  | Main Application | File Storage | Code execution |
+  | Storage capacity | High         | Low            |
+  | Cost per bit     | Better       | -              |
+  | Active Power     | Better       | -              |
+  | Standby Power    | -            | Better         |
+  | Write Speed      | Good         | -              |
+  | Read Speed       | -            | Good           |
+
+** 0xFF
+   写操作只能将芯片每一位从 1 变成 0 ，不能从 0 变成 1 。
+** Spare area ， OOB
+** ECC 校验
+** 坏快 BBT （ Bad Block Table ）
+   initial bad block
+   runtime bad block
+*** 坏快管理 （ BBM ）
+* 电路
+** GPIO
+   General Purpose Input Output
+** TTL
+   Transistor-Transistor Logic
+   TTL 集成电路的全名是晶体管-晶体管逻辑集成电路（ Transistor-Transistor Logic ）。
+** 总线标准
+*** USB
+*** SPI
+    串行外围设备接口 Serial Peripheral Interface
+    SPI 总线由三条信号线组成：串行时钟（ SCLK ）、串行数据输出（ SDO ）、串行数据输入（ SDI ）。
+    SPI 总线可以实现多个 SPI 设备互相连接。提供 SPI 串行时钟的 SPI 设备为 SPI 主机或主设备（ Master ），
+    其他设备为 SPI 从机或从设备（ Slave ）。主从设备间可以实现全双工通信，当有多
+    个从设备时，还可以增加一条从设备选择线（ CS ）。
+
+    如果用通用 IO 口模拟 SPI 总线，必须要有一个输出口（ SDO ），一个输入口（ SDI），
+    另一个口则视实现的设备类型而定，如果要实现主从设备，则需输入输出口，若只实现主设备，
+    则需输出口即可，若只实现从设备，则只需输入口即可。
+*** I2C
+    Inter-Integrated Circuit
+    I2C 总线是双向、两线（ 串行时钟线 SCL 、 串行数据线 SDA ）、串行、多主控
+    （ multi-master ）接口标准，具有总线仲裁机制，非常适合在器件之间进行近距离、
+    非经常性的数据通信。在它的协议体系中，传输数据时都会带上目的设备的设备地址，
+    因此可以实现设备组网。
+
+    如果用通用 IO 口模拟 I2C 总线，并实现双向传输，则需一个输入输出口（ SDA ），
+    另外还需一个输出口（ SCL ）。（注： I2C 资料了解得比较少，这里的描述可能很不完备）
+*** UART
+    Universal Asynchronous Receiver / Transmitter
+    UART 总线是异步串口，因此一般比前两种同步串口的结构要复杂很多，一般由波特率产
+    生器（产生的波特率等于传输波特率的 16 倍）、 UART 接收器、 UART 发送器组成，
+    硬件上由两根线，一根用于发送，一根用于接收。
+
+    显然，如果用通用 IO 口模拟 UART 总线，则需一个输入口，一个输出口。
+*** CAN
+    Controller Area Network
+* Security
+** DoS (Denial of Service)
+** DDoS (Distributed Denial of Service)
+** ARP spoofing
+** DNS spoofing
+dnsmasq
+#+BEGIN_SRC sh
+$ cat /etc/dnsmasq.conf
+no-dhcp-interface=
+server=172.17.10.20
+
+no-hosts
+addn-hosts=/etc/dnsmasq.hosts
+
+$ cat /etc/dnsmasq.hosts
+172.17.165.182 www.facebook.com
+
+$ dnsmasq --no-daemon --log-queries
+
+#+END_SRC
+
+** MITM (man-in-the-middle)
+SSLstrip
+SSLsniff
+SSLsplit
+* 网络
+PDU (Protocal Data Unit) 协议数据单元，计算机网络各层对等实体间交换的单位信息。
+SDU (Service Data Unit) 服务数据单元，本层的 PDU 为下层的 SDU ， PDU 为 SDU 的 payload （净荷）。
+MSS (Maximum Segment Size) 最大分段大小，应用层与传输层之间的接口属性。
+MTU (Maximum Transmission Unit) 最大传输单元，网络层与数据链路层之间的接口属性。
+
+** VPN
+| VPN   | Virtual Private Network            | 虚拟专用网           |
+| NAT   | Network Address Translation        | 网络地址转换         |
+| GRE   | Generic Routing Encapsulation      | 通用路由封装         |
+| L2TP  | Layer 2 Tunneling Protocol         | 二层隧道协议         |
+| IPsec | IP Security                        | Internet 协议安全    |
+| SSL   | Secure Sockets Layer               | 安全套接层           |
+| HTTPS | Hypertext Transfer Protocol Secure | 加密的超文本传输协议 |
+| IKE   | Internet Key Exchange              | 因特网密钥交换       |
+| AH    | Authentication Header              | 认证头               |
+| ESP   | Encapsulating Security Payload     | 封装安全载荷         |
+
+*** IPsec
+传输模式
+隧道模式
+*** L2TP
+*** GRE
+*** SSL VPN

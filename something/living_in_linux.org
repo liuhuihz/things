@@ -1,0 +1,109 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS:	\n:t
+#+TITLE:	活在 Linux
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+
+日常使用的一些程序和配置。
+
+* 显示管理器 (Display Manager)
+** SLiM
+* 窗口管理器 (Window Manager)
+** openbox
+xcompmgr
+tint2
+** fvwm
+* 编辑器 (Editor)
+** emacs
+需要的包
+*** Complete
+**** Minibuffer complete & Buffer complete
+***** InteractivelyDoThings (IDO)
+***** Icicles
+***** Helm (a.k.a Anything)
+**** Code complete
+***** Company
+***** Auto complete
+*** Project
+**** Projectile
+**** CEDET
+**** Project Buffer Mode
+**** Emacs-IDE
+*** Session
+**** Emacs Session
+**** Desk Top
+*** Bookmark
+**** Bookmark+
+*** org
+*** auctex
+*** graphviz
+* 输入法
+ibus
+fcitx
+* 编程 (Programming)
+** codeblocks
+** codelite
+** geany
+** dia
+** graphviz -- 流程图
+** doxygen / doxywizard
+** devhelp
+** pod browser
+** qmenu 模拟器
+** evolus pencil -- GUI prototyping tool （界面原型工具）
+* 查看器 (Viewer)
+** evince -- pdf
+** xchm -- chm
+* 图像 (Image)
+** gimp
+** blender
+** feh
+** scrot (SCReen shOT)
+** inkscape
+* 多媒体 (Multimedia)
+** vlc
+** PulseAudio
+tools: pavucontrol pavumeter paman veromix
+** xmms2
+libmac2 to support ape
+** lxmusic
+* 邮件 (Mail)
+** mutt
+* 网络 (Network)
+** wireshark
+** ss iproute
+** tcpdump
+** wicd
+** network manager
+** putty
+** filezilla
+** minicom
+** zenmap
+** remmina
+* 排版
+** texmacs -- Tex / LaTex / ConTeXt
+Engine -- pdfTex, XeTeX, luatex
+套装 -- texlive, miktex
+编辑器 -- texworks
+Emacs -- auctex
+格式 -- PlainTex, LaTex, ConTeXt
+中文宏包 -- xeCJK, ctex
+* 打印 (Print)
+** cups
+** foomatic
+* 系统监视器 (System Monitor)
+** conky
+** conkycolors
+* 版本控制
+** rapidsvn
+** gitg
+* 电子
+  oregano
+  gEDA
+  kicad
+  PGF/Tikz circuitikz
