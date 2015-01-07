@@ -620,6 +620,13 @@ BOOL utf8_mode = FALSE;
 if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
    utf8_mode = TRUE;
 #+END_SRC
+* Locale 设置
+#+BEGIN_SRC shell
+  $ update-locale LANG=zh_CN.UTF-8 LANGUAGE
+#+END_SRC
+/etc/default/locale
+/etc/environment
+/etc/pam.d
 
 windows NTFS 文件系统内部使用 16 位存储类似文件名等数据。在加载（mount）类似
 NTFS 系统时，需要进行转换，将文件名等转换成 UTF-8 。
@@ -1034,6 +1041,28 @@ MTU (Maximum Transmission Unit) 最大传输单元，网络层与数据链路层
 *** IPsec
 传输模式
 隧道模式
+#+BEGIN_SRC shell
+  $ service ipsec start
+#+END_SRC
+
+#+BEGIN_SRC shell
+  $ systemctl start ipsec
+#+END_SRC
+
+#+BEGIN_SRC shell
+  $ ipsec auto --add L2TP-PSK
+  $ ipsec auto --up L2TP-PSK
+  $ ipsec verify
+  $ ipsec auto --down L2TP-PSK
+#+END_SRC
+
+#+BEGIN_SRC shell
+  $ service ipsec stop
+#+END_SRC
+
+#+BEGIN_SRC shell
+  $ systemctl stop ipsec
+#+END_SRC
 *** L2TP
 *** GRE
 *** SSL VPN
