@@ -587,11 +587,6 @@ Node 0, zone    DMA32  10104   4916   1232    366    117     59     12      5   
 0xC8000000 ～ 0xC8800000 ：起始地址为 high_memory，结束地址为 VMALLOC_START =
 high_memory + VMALLOC_OFFSET，是一个 8M 的间隔（gap），防止内存越界。
 
-** udev
-** kernel module: /sys/module
-device driver: /sys/bus/platform/drivers
-device: /sys/bus/platform/devices
-bind, unbind to load/unload driver for device. http://lwn.net/Articles/143397/
 * NFS
 /etc/exports
 
@@ -620,6 +615,7 @@ BOOL utf8_mode = FALSE;
 if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
    utf8_mode = TRUE;
 #+END_SRC
+
 * Locale 设置
 #+BEGIN_SRC shell
   $ update-locale LANG=zh_CN.UTF-8 LANGUAGE
@@ -628,8 +624,36 @@ if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
 /etc/environment
 /etc/pam.d
 
+* Menu
+/usr/share/menu/
+/usr/share/applications/
+
+* 自启动（ autostart ）
+** X session
+$XDG_CONFIG_DIRS/autostart/ (/etc/xdg/autostart/ by default)
+/usr/share/gnome/autostart/ (GNOME only)
+$XDG_CONFIG_HOME/autostart/ (~/.config/autostart/ by default)
+
 windows NTFS 文件系统内部使用 16 位存储类似文件名等数据。在加载（mount）类似
 NTFS 系统时，需要进行转换，将文件名等转换成 UTF-8 。
+
+* Hardware
+** HAL
+HAL (Hardware Abstraction Layer or rather Hardware Annotation Library) was a software subsystem for UNIX-like operating systems providing hardware abstraction.
+
+HAL is now deprecated on most GNU/Linux distributions, such as parts of Ubuntu with functionality being merged into udev as of 2008–2010. Previously, HAL was built on top of udev.
+
+** udev
+** kernel module: /sys/module
+device driver: /sys/bus/platform/drivers
+device: /sys/bus/platform/devices
+bind, unbind to load/unload driver for device. http://lwn.net/Articles/143397/
+
+* Video
+V4L
+** Camera
+UVC (USB Video Class)
+
 * Pulse Audio, ESD, ALSA, OSS
 http://blog.csdn.net/chaolumon/article/details/6052022
 http://www.linuxsir.org/bbs/thread356984.html
