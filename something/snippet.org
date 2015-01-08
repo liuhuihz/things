@@ -52,7 +52,7 @@ set solib-search-path /aaa/bbb
 set solib-search-path /aaa/bbb/
 have different effect?
 
-在运行机上查看 cat /proc/[pid]/maps 
+在运行机上查看 cat /proc/[pid]/maps
 将程序运行时加载的所有模块复制到调试机目录下，然后设置 solib-search-path。
 以便调试时能找到程序需要的模块符号。
 
@@ -78,7 +78,7 @@ GDB does not see any threads besides the one in which crash occurred; or SIGTRAP
 
     This frequently happen on Linux, especially on embedded targets. There are two common causes:
        * you are using glibc, and you have stripped libpthread.so.0
-       * mismatch between libpthread.so.0 and libthread_db.so.1 
+       * mismatch between libpthread.so.0 and libthread_db.so.1
     GDB itself does not know how to decode "thread control blocks" maintained by glibc and considered to be glibc private implementation detail. It uses libthread_db.so.1 (part of glibc) to help it do so. Therefore, libthread_db.so.1 and libpthread.so.0 must match in version and compilation flags. In addition, libthread_db.so.1 requires certain non-global symbols to be present in libpthread.so.0. Solution: use strip --strip-debug libpthread.so.0 instead of strip libpthread.so.0.
 #+END_QUOTE
 
@@ -136,9 +136,9 @@ gcc -o test test1.c test2.c ../cg/libcg.a
 
 参考：
 7.6.3 How Linkers Use Static Libraries to Resolve References
-				-- 《深入理解计算机系统》- understanding the computer system - 
+				-- 《深入理解计算机系统》- understanding the computer system -
 				-- Computer Systems A Programmer’s Perspective
-Linking with Static Libraries 
+Linking with Static Libraries
 				-- "Linkers and Loaders"
 
 编译时如果 LD_RUN_PATH 环境变量被设置，则用 readelf -d <目标>，可以看到生成的目标中的 dynamic section 将会加入类似下列项目（此例中 LD_RUN_PATH 通过命令 export LD_RUN_PATH=.:$LD_RUN_PATH 设置）
@@ -159,7 +159,7 @@ autoconf libtools
 configure --build --host --target 设置的不同
 Basically, $build* refer to the system compilation is
 being performed on, $host* refer to the system compiled binaries are to
-run on and $target* refer to the system compiled binaries will handle. 
+run on and $target* refer to the system compiled binaries will handle.
 
 使用 netlink 与内核通信取得网络信息
 getcontext / setcontext 能否用来实现栈回溯
@@ -227,7 +227,7 @@ Why alloca's use is discouraged
 [[http://compilers.iecc.com/comparch/article/91-12-079][What's wrong with alloca()]]
 
 1) 标准 C 中并没有要求编译器实现它。在没有传统堆栈的系统中不可用，移植性不好。
-2) 
+2)
 #+begin_src c
 void DoSomething() {
    wchar_t* pStr = alloca(100);
@@ -241,7 +241,7 @@ void Process() {
 }
 #+end_src
 如果编译器内联 DoSomething ，则可能导致堆栈溢出。
-3) 
+3)
 #+begin_src c
 f1(alloca(100), 100, stdin);
 f2(42, alloca(10), 43);
@@ -575,8 +575,8 @@ kmem_cache           200    220    192   20    1 : tunables  120   60    8 :
 slabdata     11     11      0
 
 # cat /proc/buddyinfo
-Node 0, zone      DMA      9      3      3     18     15      3      3      3      2      1      0 
-Node 0, zone    DMA32  10104   4916   1232    366    117     59     12      5      0      1      1 
+Node 0, zone      DMA      9      3      3     18     15      3      3      3      2      1      0
+Node 0, zone    DMA32  10104   4916   1232    366    117     59     12      5      0      1      1
 #+end_src
 ** Buddy 伙伴系统
 ** malloc kmalloc vmalloc
@@ -616,6 +616,9 @@ if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
    utf8_mode = TRUE;
 #+END_SRC
 
+windows NTFS 文件系统内部使用 16 位存储类似文件名等数据。在加载（mount）类似
+NTFS 系统时，需要进行转换，将文件名等转换成 UTF-8 。
+
 * Locale 设置
 #+BEGIN_SRC shell
   $ update-locale LANG=zh_CN.UTF-8 LANGUAGE
@@ -623,6 +626,12 @@ if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
 /etc/default/locale
 /etc/environment
 /etc/pam.d
+
+/etc/pam.d/sshd
+/etc/ssh/sshd_config
+/etc/ssh/ssh_config
+
+/etc/pam.d/login
 
 * Menu
 /usr/share/menu/
@@ -633,9 +642,6 @@ if(0 == strcmp(nl_langinfo(CODESET), "UTF-8"))
 $XDG_CONFIG_DIRS/autostart/ (/etc/xdg/autostart/ by default)
 /usr/share/gnome/autostart/ (GNOME only)
 $XDG_CONFIG_HOME/autostart/ (~/.config/autostart/ by default)
-
-windows NTFS 文件系统内部使用 16 位存储类似文件名等数据。在加载（mount）类似
-NTFS 系统时，需要进行转换，将文件名等转换成 UTF-8 。
 
 * Hardware
 ** HAL
@@ -843,11 +849,11 @@ Visibility has *default*, *internal*, *hidden* and *protected*.
     #include <time.h>
     #include <errno.h>
     #include <string.h>
-    
+
     #define _CLOCK_ITEM(c)  { #c, c }
-    
+
     #define _CHK_TIMES      3
-    
+
     struct {
       const char *name;
       clockid_t id;
@@ -894,18 +900,18 @@ Visibility has *default*, *internal*, *hidden* and *protected*.
     #endif
       { NULL, (clockid_t)0 },
     };
-    
+
     int main(int argc, char *argv[])
     {
       (void)argc;
       (void)argv;
-    
+
       int i, j;
       struct timespec res;
-    
+
       for (i = 0; NULL != all_clocks[i].name; i ++) {
         int ret;
-    
+
         printf("%s:\n", all_clocks[i].name);
         ret = clock_getres(all_clocks[i].id, &res);
         if (0 == ret) {
@@ -921,10 +927,10 @@ Visibility has *default*, *internal*, *hidden* and *protected*.
           printf("FAILED(%s)\n\n", strerror(errno));
         }
       }
-    
+
       return 0;
     }
-    
+
   #+END_SRC
 * Flash
   Flash memory 是一种电子的非易失性（ non-volatile memory NVRAM ）的计算机存储媒
@@ -1050,6 +1056,8 @@ SDU (Service Data Unit) 服务数据单元，本层的 PDU 为下层的 SDU ， 
 MSS (Maximum Segment Size) 最大分段大小，应用层与传输层之间的接口属性。
 MTU (Maximum Transmission Unit) 最大传输单元，网络层与数据链路层之间的接口属性。
 
+** LAN
+** PPP
 ** VPN
 | VPN   | Virtual Private Network            | 虚拟专用网           |
 | NAT   | Network Address Translation        | 网络地址转换         |
