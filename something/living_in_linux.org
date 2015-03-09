@@ -62,9 +62,11 @@ fcitx
 * 图像 (Image)
 ** gimp
 ** blender
+** inkscape
+** mypaint
+** krita
 ** feh
 ** scrot (SCReen shOT)
-** inkscape
 * 多媒体 (Multimedia)
 ** vlc
 ** PulseAudio
@@ -74,6 +76,8 @@ libmac2 to support ape
 ** lxmusic
 * 邮件 (Mail)
 ** mutt
+** postfix
+virtual domain & virtual user
 * 网络 (Network)
 ** wireshark
 ** ss iproute
