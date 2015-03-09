@@ -806,6 +806,106 @@ Visibility has *default*, *internal*, *hidden* and *protected*.
 #+BEGIN_SRC c
   int foo() __attribute__ ((visibility("hidden")));
 #+END_SRC
+* __declspec
+__declspec 用于指定所给定类型的实例的与 Microsoft 相关的存储方式。
+其它的有关存储方式的修饰符如 static 与 extern 等是 C 而__declspec 是一种扩展属性的定义。
+扩展属性语法简化并标准化了 C 和 C++语言关于 Microsoft 的扩展。
+
+__declspec ( extended-decl-modifier-seq )
+
+extended-decl-modifier 参数如下，可同时出现，中间有空格隔开：
+align （C++）
+allocate
+appdomain
+deprecated （C++）
+dllimport
+dllexport
+jitintrinsic
+naked （C++）
+noalias
+noinline
+noreturn
+nothrow （C++）
+novtable
+process
+property（C++）
+restrict
+selectany
+thread
+uuid（C++）
+
+http://blog.sina.com.cn/s/blog_6283acfe0100go33.html
+http://blog.chinaunix.net/uid-24517893-id-2749061.html
+
+** __declspec(selectany)
+这个属性告诉编译器声明的全局变量是一个“任一拣选”（ pick-any ） COMDAT 。
+在连接时间，如果多个 COMDAT 定义能看到，连接器选择一个并且丢弃所有的剩余的。
+如果连接器选项 /OPT:REF 被选择，COMDAT中所有的没有引用的数据项被删除。
+
+一个全局数据在 EXE 或者 DLL 中只能被初始化一次。
+当同一个头文件被多个源文件引用时，在头中定义全局数据始始化时，这个属性被使用。这个属性在 c 和 c++ 的编译器中都是可用的。
+
+只有具有外部可访问性的全局数据才能用 __declspec(selectany) 声明为 COMDATA 。
+
+#+BEGIN_SRC c++
+  // 正确。 x1被初始化且具有外部可见性（externally visible ）
+  __declspec(selectany) int x1 = 1;
+
+  // 不正确 - const全局变量在 C++ 中缺省为 static ,
+  // 因此x2是外部不可见的。
+  // 编译时产生错误C2496：'selectany' can only be applied to data items with external linkage
+  // 但这在C语言中却是正确的，因为 const 在 C 中缺省不是 static 。
+  const __declspec(selectany) int x2 = 2;
+
+  // 正确- x3是extern const, 因此具有外部可见性
+  extern const __declspec(selectany) int x3 = 3;
+
+  // 正确 - x4 is extern const, so it is externally visible
+  extern const int x4;
+
+  const __declspec(selectany) int x4 = 4;
+
+  // 不正确 - __declspec(selectany) is applied to the uninitialized declaration of x5
+  // 可以解释为x5是在别的编译单元定义的，因此在本地声明为selectany没有必要
+  // 但是它却成功通过编译!?
+  extern __declspec(selectany) int x5;
+
+  // 正确: dynamic initialization of global object
+  class X {
+  public:
+      X(int i) { i++; };
+      int i;
+  };
+
+  __declspec(selectany) X x(1);
+
+#+END_SRC
+
+* Function-Level Linking
+** windows
+/Gy (Enable Function-Level Linking)
+Allows the compiler to package individual functions in the form of packaged functions (COMDATs).
+
+The linker requires that functions be packaged separately as COMDATs to exclude or order individual functions in a DLL or .exe file.
+
+You can use the linker option /OPT (Optimizations) to exclude unreferenced packaged functions from the .exe file.
+
+You can use the linker option /ORDER (Put Functions in Order) to include packaged functions in a specified order in the .exe file.
+
+Inline functions are always packaged if they are instantiated as calls (which occurs, for example, if inlining is off or you take a function address). In addition, C++ member functions defined in the class declaration are automatically packaged; other functions are not, and selecting this option is required to compile them as packaged functions. 
+
+
+在一个 .obj 文件内部，多个函数都放在称作 .text 的代码段中，链接器是无法从 .text 段中分割开每一个函数的，只能把整个 .text 加入到最终的可执行文件中。
+被包装函数（ packaged functions ）是指源程序的单个函数或单个数据被编译为 .obj 文件中一个单独的节（ section ），称之为 COMDATA 。
+这可以避免链接器把未被引用的函数加入到可执行文件中，从而减小最终生成的可执行文件的尺寸；还可用于删除从不同 .obj 文件中导入的同一个函数或同一个数据的多个副本。
+http://baike.baidu.com/view/9084341.htm
+
+** linux
+https://ribosome.helixcommunity.org/2005/devdocs/FuncLevelLinking
+
+** other
+http://stackoverflow.com/questions/9423576/function-level-linking-i-e-comdat-generation-in-masm-assembly
+
 * 信号 signal
 信号本质上是软件层次上对中断的一种模拟，它是一种异步通信的处理机制。
 
