@@ -1,0 +1,50 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Kernel
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* Macro
+在编译时调用，可以提前发现错误，这里利用了一些不常用的特性，当数组个数元素为负时
+会发生编译器错误，对于位域宽度而言，其为负数时也会发生编译器错误。
+
+BUILD_BUG_ON(condition)
+
+If you have some code which relies on certain constants being equal, or other
+compile-time-evaluated condition, you should use BUILD_BUG_ON to detect if
+someone changes it.
+
+The implementation uses gcc's reluctance to create a negative array, but
+gcc (as of 4.4) only emits that error for obvious cases (eg. not arguments to
+inline functions). So as a fallback we use the optimizer; if it can't prove the
+condition is false, it will cause a link error on the undefined
+“__build_bug_on_failed”. This error message can be harder to track down though,
+hence the two different methods.
+
+#+BEGIN_SRC c
+  #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
+#+END_SRC
+
+#+BEGIN_SRC c
+  #define BUILD_BUG_ON_ZERO(e)  (sizeof(struct{int : -!!(e);}))
+  #define BUILD_BUG_ON_NULL(e)  ((void*)sizeof(struct{int : -!!(e);}))
+
+  #define BUILD_BUG_ON(condition)  ((void)BUILD_BUG_ON_ZERO(condition))
+
+  #define MAYBE_BUILD_BUG_ON(condition)  ((void)sizeof(char[1 - 2 * !!(condition)]))
+#+END_SRC
