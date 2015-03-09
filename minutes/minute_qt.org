@@ -1,0 +1,228 @@
+# -*- mode: org; coding: utf-8; -*-
+
+#+OPTIONS: \n:t ^:t
+#+TITLE: Qt
+#+AUTHOR: 刘晖
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+
+Qt 是一个跨平台的全面开发框架（ Full Development Framework ），它提供一系列的工具流水化（ streamline ）应用程序和用户界面的创建。
+它不仅仅是一个 GUI 的界面开发库。 Qt 封装了系统原语
+
+* Qt 中的核心概念
+** 对象模型（ Object Model ）
+
+** 元对象系统（ Meta Object System ）
+Qt 的元对象系统提供用于对象间（ inter-object ）通信的信号（ signals ）/槽（ slots ）机制，
+运行时类型信息（ run-time type information ）和动态属性系统（ dynamic property system ）。
+元对象系统基于以下三个方面：
+
+1. QObject 类为各对象提供了一个基础类，通过它来利用元对象系统。
+
+2. 在类声明私有区块的 Q_OBJECT 宏用来启用元对象系统特性，比如动态属性，信号，槽等。
+
+3. 元对象编译器（ Meta-Object Compiler - moc ）为每个 QObject 子类生成必要的代码来实现元对象特性。
+moc 工具读取 C++ 源文件。如果它找到一个或多个类声明中包含有 Q_OBJECT 宏，它将为这样的每一个类生成另一个元对象代码的 C++ 源文件。
+这个生成的源文件要么用 include 指令包含在原来的源文件中，要么，在更通常的情况下，与类的实现编译链接。
+
+除了为对象间的通信提供信号/槽机制（引入该系统的主要原因），元对象代码还提供以下附加的特性：
+
+- QObject::metaObject() 返回与该类关联的元对象。
+
+- QMetaObject::className() 在运行时返回该类的类名，无需原生的通过 C++ 编译器提供的运行时类型信息（ RTTI ）支持。
+
+- QObject::inherits() 返回一个对象是否是一个在 QObject 继承树中继承了某个特定类的类的实例。
+
+- QObject::tr() 和 QObject::trUtf8() 为国际化翻译字符串。
+
+- QObject::setProperty() 和 QObject::property() 通过名字设置/获取属性。
+
+- QMetaObject::newInstance() 构造该类的一个新实例。
+
+可以使用 qobject_cast() 对 QObject 类进行动态类型转换（ dynamic casts ）。
+qobject_cast() 函数的行为类似 C++ 标准中的 dynamic_cast() ，优点是不需要 RTTI 支持而且也可以工作在跨动态库边界（ dynamic library boundaries）的情况下。
+
+可以在使用 QObject 作为基类的同时不使用 Q_OBJECT 宏以及元对象代码，如果不使用 Q_OBJECT 宏，那么信号/槽和在这里描述的其它元对象系统的特性将不可用。
+从元对象系统的观点来看，一个不使用元对象代码的 QObject 的子类跟它使用元对象代码的最接近的祖先（ closest ancestor with meta-object code ）是等价的。
+这意味着，举例来说， QMetaObject::className() 不会返回你类的真正的名称，而是返回它等价祖先的名称。
+
+因此，我们强烈推荐所有 QObject 的子类都使用 Q_OBJECT 宏，无论它们实际上是否使用信号，槽以及属性等。
+
+** 属性系统（ Property System ）
+Qt 提供了一个成熟（ sophisticated ）的属性系统，类似于某些专有的编译器所提供的。
+然而，作为一个平台以及编译器无关的库， Qt 并不依赖于非标准的编译器特性，如 __property 或者 [property] ，Qt 的方案在 Qt 所支持的平台的任何标准编译器下都能工作。
+它基于元对象系统 —— 也通过信号/槽机制提供对象间通讯。
+
+*** 属性声明
+要声明一个属性，在一个继承自 QObject 的类中使用 Q_PROPERY() 宏。
+#+BEGIN_SRC c++
+  Q_PROPERTY(type name
+             (READ getFunction [WRITE setFunction] |
+              MEMBER memberName [(READ getFunction | WRITE setFunction)])
+             [RESET resetFunction]
+             [NOTIFY notifySignal]
+             [REVISION int]
+             [DESIGNABLE bool]
+             [SCRIPTABLE bool]
+             [STORED bool]
+             [USER bool]
+             [CONSTANT]
+             [FINAL])
+#+END_SRC
+下面是 QWidget 类中一些属性声明的典型例子：
+#+BEGIN_SRC c++
+  Q_PROPERTY(bool focus READ hasFocus)
+  Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
+  Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor RESET unsetCursor)
+#+END_SRC
+下面这个例子演示了如何使用 MEMBER 关键字将一个成员变量导出为 Qt 属性。注意必须指定一个 NOTIFY 信号以允许 QML 属性绑定。
+#+BEGIN_SRC c++
+      Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
+      Q_PROPERTY(qreal spacing MEMBER m_spacing NOTIFY spacingChanged)
+      Q_PROPERTY(QString text MEMBER m_text NOTIFY textChanged)
+      ...
+  signals:
+      void colorChanged();
+      void spacingChanged();
+      void textChanged(const QString &newText);
+
+  private:
+      QColor  m_color;
+      qreal   m_spacing;
+      QString m_text;
+#+END_SRC
+
+属性的行为类似于一个类的数据成员，但它还有一些额外的通过元对象系统可以使用的特性。
+
+- READ 存取器（ accessor ）函数
+如果没有指定 MEMBER 变量，则它是必需的。用于读取属性值。
+理想的，使用一个常量函数（ const function ），该函数返回值必须是属性类型或者属性类型的常量引用（ const reference ）。
+
+- WRITE 存取器函数
+可选，用于设置属性值。该函数必须返回 void 且只能有一个参数，该参数必须是属性类型或者属性类型的指针或者引用。只读属性不需要 WRITE 函数。
+
+- MEMBER 变量关联
+如果没有指定 READ 存取器函数，则它是必需的。
+
+- RESET 函数
+可选。
+
+- NOTIFY 信号
+可选。
+
+- REVISION 数值
+可选。
+
+- DESIGNABLE 特性（ attribute ）
+
+- SCRIPTABLE 特性
+
+- STORED 特性
+
+- USER 特性
+
+- CONSTANT 特性
+
+- FINAL 特性
+
+READ ， WRITE 和 RESET 函数是可以被继承的。它们可以是虚函数。当继承类使用了多继承时，它们来自第一个被继承的类。
+
+属性的类型可以是任何 QVariant 支持的类型，也可以是用户定义类型。
+
+*** 使用元对象系统读写属性
+任何属性都可以使用通用函数 QObject::property() 和 QObject::setProperty() 来读写，除了属性名称，不需要了解拥有该属性的类的其他任何情况。
+以下的代码片段中， QAbstractButton::setDown() 和 QObject::setProperty() 是一样的，用来设置属性 "down" ：
+#+BEGIN_SRC c++
+  QPushButton *button = new QPushButton;
+  QObject *object = button;
+
+  button->setDown(true);
+  object->setProperty("down", true);
+#+END_SRC
+
+通过 WRITE 存取器来访问属性是更好的选择，因为它更快而且在编译期能提供更好的诊断信息，但以这种方式设置属性需要这个类在编译期是已知的。
+通过名称来访问属性可以让你访问那些在编译期未知的类。在运行期你可以通过查询 QObject ， QMetaObject 和 QMetaProperties 来发现类的属性。
+#+BEGIN_SRC c++
+  QObject *object = ...
+  const QMetaObject *metaobject = object->metaObject();
+  int count = metaobject->propertyCount();
+  for (int i=0; i<count; ++i) {
+      QMetaProperty metaproperty = metaobject->property(i);
+      const char *name = metaproperty.name();
+      QVariant value = object->property(name);
+      ...
+  }
+#+END_SRC
+
+** 信号（ signals ）/槽（ slots ）
+
+* 一个 Qt 项目的构成
+
+* 开发工具
+** IDE
+*** Visual Studio
+Microsoft 的集成开发环境，通过安装 Qt 的 Visual Studio AddIn ，可以将一些 Qt 开发工具和命令集成到 Visual Studio 中。
+
+*** Qt Creator
+Qt 官方出品的 IDE 。
+Qt Creator 是一个用于 Qt 开发的轻量级跨平台集成开发环境。
+Qt Creator 可带来两大关键益处：提供首个专为支持跨平台开发而设计的集成开发环境，并确保首次接触 Qt 框架的开发人员能迅速上手和操作。
+即使不是用来开发 Qt 应用程序， Qt Creator 也是一个简单易用且功能强大的 IDE 。
+以下工具集成在 Qt Creator 中：
+
+- Qt Designer
+利用 Qt 小部件（ widgets ）设计和构建图形用户界面（ GUI ），你可以在一个可视化的编辑器里构建和自定义自己的小部件，并使用不同的样式和分辨率进行测试。
+
+- qmake
+为不同的目标平台编译应用程序。你也可以使用类似 CMake 或 Autotools 等自动化编译工具。
+
+- Qt Linguist
+本地化工具，包括典型的本地化流程各阶段的工具：开发，翻译，发布管理，有 lupdate 和 lrelease 等。
+
+- Qt Assistant
+查看 Qt 文档的工具。
+
+另外，你还可以使用以下工具：
+
+- makeqpf
+为嵌入式设备生成预渲染（ pre-rendered ）字体。
+
+- Meta-Object Compiler (moc)
+为 QObject 子类生成元对象信息（ meta-object information ）。
+
+- User Interface Compiler (uic)
+从用户界面文件生成 C++ 代码。
+
+- Resource Compiler (rcc)
+在编译过程中将资源嵌入到生成的 Qt 应用中。
+
+- Qt D-Bus XML compiler (qdbusxml2cpp)
+将 D-Bus 接口描述转化成 C++ 源文件。
+
+- D-Bus Viewer
+检测 D-Bus 对象和消息。
+
+* 用户界面
+* 核心
+
+* Porting Qt4 to Qt5
+
+C++ -> Language
+"Treat WChar_t As Built in Type" "Yes (/Zc:wchar_t)" or "No (/Zc:wchar_t-)"
+
+? Q_COMPILER_UNICODE_STRINGS
+
+http://blog.csdn.net/zenghao0708/article/details/24244293
+http://www.cnblogs.com/snake-hand/p/3211903.html
+http://blog.csdn.net/guochang7511/article/details/36191803
+http://www.cnblogs.com/li-peng/p/3645608.html
+http://qt-project.org/wiki/Transition_from_Qt_4.x_to_Qt5
+http://wiki.qt.io/index.php?title=Qt_4_to_Qt_5_migration
+
+http://doc.qt.io/qt-5/portingguide.html
+http://doc.qt.io/qt-5/sourcebreaks.html
+http://doc.qt.io/qt-5/qt-obsolete.html
+http://doc.qt.io/qt-5/qimage-obsolete.html
+http://doc.qt.io/qt-5/search-results.html?q=Obsolete
+http://doc.qt.io/qt-5/search-results.html?q=porting
