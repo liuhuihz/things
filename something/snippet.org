@@ -906,6 +906,12 @@ https://ribosome.helixcommunity.org/2005/devdocs/FuncLevelLinking
 ** other
 http://stackoverflow.com/questions/9423576/function-level-linking-i-e-comdat-generation-in-masm-assembly
 
+* EBC EBO EBCO
+Empty Base Class Optimization
+空基类 空基类优化
+空类 没有数据成员 没有虚函数 没有虚继承 sizeof = 1
+空类作为基类将被优化 sizeof = 0
+只有一个空基类可以被如此优化（作为第一个基类？）。是否是内存布局中继承类的 this 指针和第一个基类的指针相同（因为空基类没有数据成员，所以在内存布局中不占用字节）？
 * 信号 signal
 信号本质上是软件层次上对中断的一种模拟，它是一种异步通信的处理机制。
 
