@@ -881,6 +881,23 @@ http://blog.chinaunix.net/uid-24517893-id-2749061.html
 
 #+END_SRC
 
+* Calling conventions
+
+  Keyword|Stack cleanup|Parameter passing
+  __cdecl | Caller|Pushes parameters on the stack, in reverse order (right to left).
+  __clrcall|n/a|Load parameters onto CLR expression stack in order (left to right).
+  __stdcall|Callee|Pushes parameters on the stack, in reverse order (right to left).
+  __fastcall|Callee|Stored in registers, then pushed on stack.
+  __thiscall|Callee|Pushed on stack; this pointer stored in ECX.
+  __vectorcall|Callee|Stored in registers, then pushed on stack in reverse order (right to left).
+
+** __cdecl
+** __stdcall
+** __fastcall
+** __thiscall
+** __vectorcall
+** __clrcall
+
 * Function-Level Linking
 ** windows
 /Gy (Enable Function-Level Linking)
@@ -892,7 +909,7 @@ You can use the linker option /OPT (Optimizations) to exclude unreferenced packa
 
 You can use the linker option /ORDER (Put Functions in Order) to include packaged functions in a specified order in the .exe file.
 
-Inline functions are always packaged if they are instantiated as calls (which occurs, for example, if inlining is off or you take a function address). In addition, C++ member functions defined in the class declaration are automatically packaged; other functions are not, and selecting this option is required to compile them as packaged functions. 
+Inline functions are always packaged if they are instantiated as calls (which occurs, for example, if inlining is off or you take a function address). In addition, C++ member functions defined in the class declaration are automatically packaged; other functions are not, and selecting this option is required to compile them as packaged functions.
 
 
 在一个 .obj 文件内部，多个函数都放在称作 .text 的代码段中，链接器是无法从 .text 段中分割开每一个函数的，只能把整个 .text 加入到最终的可执行文件中。
