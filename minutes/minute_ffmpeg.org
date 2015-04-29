@@ -1,0 +1,49 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	FFMPEG
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+ffmpeg.org
+
+#+BEGIN_SRC sh
+  $ ffmpeg -h full
+  $ ffmpeg -formats
+  $ ffmpeg -decodes
+  $ ffmpeg -encodes
+#+END_SRC
+
+directshow v4l avfoundation
+
+initypes.h
+
+AVCodecContext
+
+AVStream
+
+AVFormatContext
+
+AVFrame AVPicture AVPacket
+
+av_frame_alloc
+
+av_image_alloc
+
+av_samples_get_buffer_size
+av_samples_alloc
+av_samples_alloc_array_and_samples

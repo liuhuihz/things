@@ -929,17 +929,25 @@ Empty Base Class Optimization
 空类 没有非静态数据成员 没有虚指针（虚函数表，虚继承的虚基类） sizeof = 1
 空类作为基类将被优化 sizeof = 0
 只有一个空基类可以被如此优化（作为第一个基类？）。是否是内存布局中继承类的 this 指针和第一个基类的指针相同（因为空基类没有数据成员，所以在内存布局中不占用字节）？
-* auto_ptr scoped_ptr shared_ptr weak_ptr
+* 智能指针 auto_ptr scoped_ptr shared_ptr weak_ptr
+RAII（Resource Acquisition Is Initialization，资源获取即初始化，是使用一个对象，在其构造时获取资源，
+在对象生命期控制对资源的访问使之始终保持有效，最后在对象析构的时候释放资源。）
 ** auto_ptr
+auto_ptr 对管理的对象指针是独占的，在拷贝构造和赋值构造非等价，过程中会发生所有权的转移。
+auto_ptr 不能用于标准库容器中。
+
 ** scoped_ptr
 顾名思义，这个智能指针类型只在它定义的作用域有效，不能传递到域外。
 因为拷贝构造和赋值构造函数都私有，所以不能作为函数参数，不能作为返回值。
-它管理的指针不能被共享，因此两个实例之间的比较也没有意义。
+拥有它指向资源的所有权，它管理的指针不能被共享，因此两个实例之间的比较也没有意义。
 
 ** shared_ptr
-该类型智能指针管理的指针可以在多个实例间共享，通过引用计数来记录这些实例的数目。
+该类型智能指针管理的对象指针可以在多个实例间共享，通过引用计数来记录拥有该对象的实例的数目。
+可以跨越模块、跨越线程边界传递。
+拷贝构造和赋值构造是等价的，也可以被比较，因此可以用在标准库容器中。
 侵入型计数
 非侵入型计数
+强引用
 
 ** weak_ptr
 这个智能指针是为了解决循环引用（可能导致内存泄漏）的问题。
@@ -1236,3 +1244,57 @@ MTU (Maximum Transmission Unit) 最大传输单元，网络层与数据链路层
 *** L2TP
 *** GRE
 *** SSL VPN
+* Tricks
+** likely unlikely
+GNU version
+#+BEGIN_SRC c
+  #define likely(expr)    __builtin_expect((expr), !0)
+  #define unlikely(expr)  __builtin_expect((expr), 0)
+#+END_SRC
+** 无锁队列 Lock Free
+CAS (Compare & Set or Compare & Swap)
+http://coolshell.cn/articles/8239.html
+
+linux
+__sync_val_compare_and_swap
+__sync_bool_compare_and_swap
+
+windows
+InterlockedCompareExchange
+* Raw Player
+** vooya
+
+** mplayer
+#+BEGIN_SRC sh
+  $ man mplayer # or `man mplayer2'
+#+END_SRC
+#+BEGIN_SRC sh
+  $ mplayer -rawvideo format=help
+#+END_SRC
+#+BEGIN_SRC sh
+  $ mplayer /path/to/video_file.raw -demuxer rawvideo -rawvideo fps=30:w=640:h=480:format=rgba
+#+END_SRC
+#+BEGIN_SRC sh
+  $ mplayer /path/to/audio_file.raw -demuxer rawaudio -rawaudio samplesize=2:channels=1:rate=8000
+#+END_SRC
+
+** FFMpeg
+?
+#+BEGIN_SRC sh
+  $ ffplay -ar 16000 -ac 1 /path/to/audio_file.raw
+#+END_SRC
+
+** mencoder
+
+** sox / play
+transcoding ?
+#+BEGIN_SRC sh
+  $ sox msg0000.wav --bits 16 --encoding signed-integer --endian little msg0001.raw
+#+END_SRC
+#+BEGIN_SRC sh
+  $ play -t raw -r 16k -e signed -b 16 -c 1 /path/to/audio_file.raw
+#+END_SRC
+-r = sampling rate
+-b = sampling precision (bits)
+-c = number of channels
+

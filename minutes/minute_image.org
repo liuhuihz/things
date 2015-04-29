@@ -1,0 +1,40 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Image
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* 色彩空间 （ Color space ）
+** RGB
+** YUV / YIQ / YCrCb
+亮度信息 色彩信息（色度、饱和度）
+基于一个事实：人类对亮度的敏感度高于色彩及饱和度。
+*** 采样格式 存储格式
+**** YUV 4:4:4
+U 、 V 分量高度完全采样，宽度完全采样。
+
+**** YUV 4:2:2
+U 、 V 分量高度完全采样，宽度采样一半。
+
+**** YUV 4:2:0
+U 、 V 分量高度采样一半，宽度采样一半。
+
+*** 模式
+**** 平面模式（ planar ）
+**** 包装模式（ packed ）
+**** two-planar

@@ -96,3 +96,19 @@ $ git push
 
 * 分支、分支、分支
 * 合并（merge）与衍合（rebase）
+* 裸 （ bare ） 仓库和镜像 （ mirror ）
+** 裸仓库
+#+BEGIN_SRC sh
+  $ git clone --bare ssh://gituser@xifan.biz:3722/opt/git/things.git
+#+END_SRC
+区别于一般的仓库建立仓库目录，并将管理文件置于 =.git= 子目录下，裸仓库将仓库目录直接作为 =$GIT_DIR= ，
+克隆完成后，也不 checkout 分支，因为没有工作树（ working tree ）目录。
+
+** 镜像
+#+BEGIN_SRC sh
+  $ git clone --mirror ssh://gituser@xifan.biz:3722/opt/git/things.git
+#+END_SRC
+
+** 差别
+http://stackoverflow.com/questions/3959924/whats-the-difference-between-git-clone-mirror-and-git-clone-bare
+https://help.github.com/articles/duplicating-a-repository/#mirroring-a-repository
