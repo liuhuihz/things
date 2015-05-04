@@ -1281,6 +1281,10 @@ InterlockedCompareExchange
 ** FFMpeg
 ?
 #+BEGIN_SRC sh
+  $ ffplay -f rawvideo -video_size 640x480 a.yuv
+#+END_SRC
+
+#+BEGIN_SRC sh
   $ ffplay -ar 16000 -ac 1 /path/to/audio_file.raw
 #+END_SRC
 
