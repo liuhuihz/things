@@ -52,6 +52,24 @@ GUI 程序可以使用鼠标， <F10> 或者命令 menu-bar-open 操作菜单。
 缓冲区中的文本补全。 minibuffer 中的输入可以是 `M-x` 后输入的命令或者响应 minibuffer 中提示
 所输入的文本。
 
+** 补全规则
+
+*** emacs21
+*** emacs22
+*** basic
+*** partial-completion
+*** substring
+*** initials
+
+原生 Emacs 的 `basic` 补全规则，补全候选项是前缀与输入相匹配的哪些项。比如，输入
+`M-x region TAB` ，将显示所有以 `region` 开头的命令。原生 Emacs 在版本 23 之前，
+只有严格的前缀补全规则。版本 23 开始，使用了多种补全规则，你可以通过 `completion-styles`
+参数来指定使用哪些规则，它的值是一个列表，列表里的每一项都是一个补全规则，补全的时候将按照顺序来
+匹配，默认的值是 (basic partial-completion emacs22) ，不过，很多 Emacs 命令会忽略这个
+参数。 只有在前一个规则下没有得到任何候选项的情况下，才会匹配后一个规则。
+你输入 `when` ，不会得到 `eval-when-compile` 的候选项。？？？？
+
+
 ** Minibuffer 输入补全
 
 ** 缓冲区内的文本补全
