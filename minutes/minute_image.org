@@ -24,15 +24,27 @@
 ** YUV / YIQ / YCrCb
 亮度信息 色彩信息（色度、饱和度）
 基于一个事实：人类对亮度的敏感度高于色彩及饱和度。
-*** 采样格式 存储格式
+https://msdn.microsoft.com/en-us/library/windows/desktop/dd391027.aspx
+
+*** 采样格式 存储格式 Chroma sampling
 **** YUV 4:4:4
 U 、 V 分量高度完全采样，宽度完全采样。
+4:4:4 means no downsampling of the chroma channels.
 
 **** YUV 4:2:2
 U 、 V 分量高度完全采样，宽度采样一半。
+4:2:2 means 2:1 horizontal downsampling, with no vertical downsampling.
+Every scan line contains four Y samples for every two U or V samples.
 
 **** YUV 4:2:0
 U 、 V 分量高度采样一半，宽度采样一半。
+4:2:0 means 2:1 horizontal downsampling, with 2:1 vertical downsampling.
+
+**** YUV 4:1:1
+4:1:1 means 4:1 horizontal downsampling, with no vertical downsampling.
+Every scan line contains four Y samples for every U or V sample.
+4:1:1 sampling is less common than other formats, and is not discussed in
+detail in this article.
 
 *** 模式
 **** 平面模式（ planar ）

@@ -1,0 +1,80 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Multimedia
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* Video
+** 帧
+- I 帧 （帧内编码帧 intra picture ）
+  关键帧，一般是每个 GOP 的第一帧。自身可解压成一张单独的完整图片。
+
+- P 帧 （前向预测编码帧 predictive-frame ）
+  需要参考其前面的一个 I 帧或者 B 帧来解压成一张完整的图片。
+
+- B 帧 （双向预测内插编码帧 bi-directional interpolated prediction frame ）
+  需要参考其前面的一个 I 帧或者 P 帧及其后面的一个 P 帧来解压成一张完整的图片。
+
+- GOP  (Group Of Picture)
+  两个 I 帧之间形成一个 GOP 。
+
+- DTS (Decode Time Stamp)
+  单位是 90kHz ，和 PTS 一样。RFC3984 规定采用 9kHz 的时钟，因此如果编码帧频是 30，那么时间戳间隔就该是 90000 / 30 = 3000 。
+
+- PTS (Presentation Time Stamp)
+
+- FPS
+
+- CBR
+
+- VBR
+
+- bitrate
+
+在没有 B 帧存在的情况下 DTS 的顺序和 PTS 的顺序应该是一样的。
+
+** 场
+
+* Audio
+** Bitrate 比特率
+VBR (Variable Bitrate)
+ABR (Average Bitrate)
+CBR (Constant Bitrate)
+
+** sample rate
+48kHz
+44.1kHz
+
+** sample format
+integer
+float
+double
+http://www.zhihu.com/question/23793747
+http://en.wikipedia.org/wiki/Audio_bit_depth
+
+** channel
+
+** convert
+*** Resampling 重采样
+比如采样率 44100 Hz 到 8000 Hz 。
+*** Format conversion 格式转换
+比如 16 位有符号整型转换到 8 位无符号整型或者浮点数。
+*** Rematrixing
+比如从多声道到单声道。
+
+* Image

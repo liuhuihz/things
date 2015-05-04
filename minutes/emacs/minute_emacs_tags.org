@@ -156,7 +156,7 @@ Tag file for definitions.
 Tag file for references.
 
 'GPATH'
-Tag file for source files.
+Tag file for source files (path/name).
 
 #+BEGIN_SRC sh
 $ gtags -v
