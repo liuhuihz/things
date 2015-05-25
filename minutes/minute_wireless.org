@@ -21,6 +21,7 @@
 
 ISM (Industrial Scientific, and Medical)
 FCC (Federal Communications Committee)
+IoT (Internet of Things)
 
 WiMax Wi-Fi 3G LTE
 
@@ -31,40 +32,46 @@ WPAN (Wireless Personal Area Network) IEEE 802.15
 WSN (Wireless Sensor Network)
 WMSN (Wireless Multimedia Sensor Network)
 
-tiaozhifangshi
-直序扩频（DSSS）、跳频扩频（FHSS）、正交频分复用（OFDM）、高速率直序扩频（HR/DSSS）、红外（TR）、高吞吐（HT OFDM）、超高吞吐（VHT OFDM）。
-zhichi MIMO
+调制方式
+ASK、FSK、直序扩频（DSSS）、跳频扩频（FHSS）、正交频分复用（OFDM）、高速率直序扩频（HR/DSSS）、红外（TR）、高吞吐（HT OFDM）、超高吞吐（VHT OFDM）。
+后两种支持 MIMO 。
 
 标准组织 频带 速率 时延 覆盖 功耗 移动性 QoS
 
 
-|------------+-----+--------------+---------------+---------------+-------------+--------------|
-|            | LTE | Wi-Fi        | BlueTooth     | ZigBee        | RFID        | NFC          |
-|------------+-----+--------------+---------------+---------------+-------------+--------------|
-| biaozhuan  |     | IEEE 802.11  | IEEE 802.15.1 | IEEE 802.15.4 | IEEE 802.16 | ISO/IEC18092 |
-|            |     |              |               |               |             | ISO/IEC21481 |
-| pnidai     |     | 2.4 GHz      | 2.4 GHz       | 2.4 GHz       |             | 13.56 GHz    |
-|            |     |              |               | 868 MHz       |             |              |
-|            |     |              |               | 915 MHz       |             |              |
-| sulv       |     | 11 ~ 54 Mbps | 1 Mbps        | 250 Kbps      | 1 Kbps      | 424 Kbps     |
-| fugai      |     | 20 ~ 200 m   | 20 ~ 200 m    | 2 ~ 20 m      | 1 m         | 20 m         |
-| gonghao    |     | 10 ~ 50 mA   | 20 mA         | 5 mA          | 10 mA       |              |
-|            |     |              | Wibree        |               |             |              |
-| anquanxing |     | Low          | High          | Medium        |             |              |
-|------------+-----+--------------+---------------+---------------+-------------+--------------|
+|----------+--------------+---------------+------------------+-------------+--------+--------------|
+|          | Wi-Fi        | BlueTooth     | ZigBee           | RFID        | RFID   | NFC          |
+|----------+--------------+---------------+------------------+-------------+--------+--------------|
+| 标准     | IEEE 802.11  | IEEE 802.15.1 | IEEE 802.15.4    | IEEE 802.16 |        | ISO/IEC18092 |
+|          |              |               |                  |             |        | ISO/IEC21481 |
+| 频带     | 2.4 GHz      | 2.4 GHz       | 2.4 GHz          |             |        | 13.56 GHz    |
+|          |              |               | 868 MHz (欧洲)   |             |        |              |
+|          |              |               | 915 MHz （美国） |             |        |              |
+| 速率     | 11 ~ 54 Mbps | 1 Mbps        | 250 Kbps         | 1 Kbps      |        | 106 Kbps     |
+|          |              | 2.1 Mbps      |                  |             |        | 212 Kbps     |
+|          |              |               |                  |             |        | 424 Kbps     |
+| 覆盖     | 20 ~ 200 m   | 20 ~ 200 m    | 2 ~ 20 m         | 1 m         |        | 20 m         |
+| 功耗     | 10 ~ 50 mA   | 20 mA         | 5 mA             | 10 mA       |        |              |
+|          |              | Wibree        |                  |             |        |              |
+| 安全性   | 低           | 高            | 中               |             |        |              |
+| 网络类型 |              | 单点对多点    |                  |             | 点对点 | 点对点       |
+|----------+--------------+---------------+------------------+-------------+--------+--------------|
 
 zongjie ruxia
 
 
-* wuxiantongxunjishu
+* 无线通讯技术
 ** WiMax (Worldwide Interoperability for Mi-crowave Access)
 ** 3G (3rd Generation)
 ** LTE (Long Term Evolution)
-* wuxianduanjutongxunjishu
+* 短距无线通讯技术
+http://www.csdn.net/article/2015-04-14/2824470
 ** Wi-Fi (Wireless Fidelity)
 Wi-Fi Direct
-2.4 G gongzuopinlvdaikuan 83.5 MHz
+2.4 G 工作频率带宽 83.5 MHz
+|---------+-----------|
 | Channel | Frequency |
+|---------+-----------|
 |       1 | 2412 MHz  |
 |       2 | 2417 MHz  |
 |       3 | 2422 MHz  |
@@ -78,20 +85,75 @@ Wi-Fi Direct
 |      11 | 2462 MHz  |
 |      12 | 2467 MHz  |
 |      13 | 2472 MHz  |
+|---------+-----------|
 
-5 G pinlvfanwei 5.725 GHz ~ 5.850 GHz, 5 channels, each channel has 20MHz bandwidth
+5 G 频率范围 5.725 GHz ~ 5.850 GHz, 5 信道, 每信道 20MHz 带宽。
 Frequency = 5000 + n * 5(MHz)
 n = 149, 153, 157, 161, 165
-
 
 ** BlueTooth
 BlueTooth 4.0
 Wibree
 ** ZigBee
 http://zh.wikipedia.org/wiki/ZigBee
+3 个频段 2.4 GHz， 868 MHz（欧洲）， 915 MHz（美国），共定义了 27 个物理信道：
+868频段 MHz 定义了 1 个信道， 915 MHz 频段定义了 2 个信道，信道间隔为 2 MHz，
+2.4 GHz 频段定义了 16 个信道，信道间隔为 5 MHz 。
+|---------------------+------------------+--------------+--------------+--------------|
+| 信道编号            | 中心频率 MHz     | 信道间隔 MHz | 频率上限 MHz | 频率下限 MHz |
+|---------------------+------------------+--------------+--------------+--------------|
+| k = 0               | 868.3            |            - |        868.6 |        868.0 |
+| k = 1, 2, ... , 10  | 906 + 2 (k - 1)  |            2 |        928.0 |        902.0 |
+| k = 11, 12, ..., 26 | 2401 + 5 (k -11) |            5 |       2483.5 |       2400.0 |
+|---------------------+------------------+--------------+--------------+--------------|
+
+*** 协议栈
+*** 设备类型
+- 全功能设备 FFD(Full Functional Device)
+ 具有框架结构中 MAC 层的全部的网络功能，即可以用作信息的发射和接受装置，也可以
+ 用作信息的调制解调装置。
+- 精简功能设备 RFD(Reduced Function Device)
+ 只提供了 MAC 层的部分功能，即只能进行信息的发送和接受，不能进行信息的调制解调。
+*** 组网
+**** 网络节点类型
++ 协调节点 ZC(Coordinator)
+ - 在 IEEE 802.15.4 中也称为 PAN 协调点，在无线传感器网络中叫做汇聚节点。
+ - 必须是 FFD 。
+ - 一个 ZigBee 网络只有一个协调点，是整个网络的主控节点。负责发起建立新的网络、
+  设定网络参数、管理网络中的节点以及存储网络中节点信息等，网络形成后也可以执行路由
+  器的功能。
+ - 一般由交流电源持续供电。
++ 路由节点 ZR(Route)
+ - 也必须是 FFD 。
+ - 可以参与路由发现、消息转发，通过连接别的节点来扩展网络的覆盖范围等。
++ 终端节点 ZED(EndDevice)
+ - 可以是 FFD 或者 RFD 。
+ - 通过协调点或者路由节点连接到网络，但不允许其他任何节点通过它加入网络。
+ - 能以非常低的功率运行。
+**** 拓扑结构
+- 星型(Star Network)
+- 网型、网格状(Mesh Network)
+- 树型、簇状(Mesh-Tree Network)
+**** 三种地址
++ 长地址（物理地址）
+ - 64 位（8 字节） IEEE MAC 地址（由 IEEE 分配管理）
++ 短地址（网络地址）
+ - 16 位（4 字节） 当设备加入网络后分配
+ - 协调器的网络地址为 0x00 。
++ 网络标识符 PANID(Personal Area Network ID)
+ - 32 位（4 字节）
+ - 用于区别不同的 ZigBee 网络，即在一个网络中的所有节点的 PANID 相同。
+**** 自组网
+自动组网 网络自愈
+*** 协议
+- JenNet-IP
+- ZigBeePro
+- Z-Stack
+** IrDA (Infrared Data Association)
 ** RFID (Radio Frequency Identification)
-** DSRC
-** NFC
+** DSRC (Dedicated ShortRange Communication)
+** NFC (Near Field Communication)
+** URB (Ultra Wide Band)
 
 * Marvell Easy Connect
 http://www.marvell.com.cn/company/news/pressDetail.do?releaseID=5457
