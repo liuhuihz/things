@@ -1,0 +1,74 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Wireless
+#+AUTHOR: Liu Hui
+#+EMAIL: hliu@arcsoft.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+ISM(Industrial Scientific, and Medical)
+FCC(Federal Communications Committee)
+
+WiMax Wi-Fi 3G LTE
+
+WLAN
+WPAN
+
+tiaozhi
+
+直序扩频（DSSS）、跳频扩频（FHSS）、正交频分复用（OFDM）、高速率直序扩频（HR/DSSS）、红外（TR）、高吞吐（HT OFDM）、超高吞吐（VHT OFDM）。
+zhichi MIMO
+
+标准组织 频带 速率 时延 覆盖 功耗 移动性 QoS
+
+
+|------------+-----+--------------+---------------+---------------+-------------+--------------|
+|            | LTE | Wi-Fi        | BlueTooth     | ZigBee        | RFID        | NFC          |
+|------------+-----+--------------+---------------+---------------+-------------+--------------|
+| biaozhuan  |     | IEEE 802.11  | IEEE 802.15.1 | IEEE 802.15.4 | IEEE 802.16 | ISO/IEC18092 |
+|            |     |              |               |               |             | ISO/IEC21481 |
+| pnidai     |     | 2.4 GHz      | 2.4 GHz       | 2.4 GHz       |             | 13.56 GHz    |
+|            |     |              |               | 868 MHz       |             |              |
+|            |     |              |               | 915 MHz       |             |              |
+| sulv       |     | 11 ~ 54 Mbps | 1 Mbps        | 250 Kbps      | 1 Kbps      | 424 Kbps     |
+| fugai      |     | 20 ~ 200 m   | 20 ~ 200 m    | 2 ~ 20 m      | 1 m         | 20 m         |
+| gonghao    |     | 10 ~ 50 mA   | 20 mA         | 5 mA          | 10 mA       |              |
+|            |     |              | Wibree        |               |             |              |
+| anquanxing |     | Low          | High          | Medium        |             |              |
+|------------+-----+--------------+---------------+---------------+-------------+--------------|
+
+zongjie ruxia
+
+
+* wuxiantongxunjishu
+** WiMax (Worldwide Interoperability for Mi-crowave Access)
+** 3G (3rd Generation)
+** LTE (Long Term Evolution)
+* wuxianduanjutongxunjishu
+** Wi-Fi (Wireless Fidelity)
+Wi-Fi Direct
+** BlueTooth
+BlueTooth 4.0
+Wibree
+** ZigBee
+http://zh.wikipedia.org/wiki/ZigBee
+** RFID
+** DSRC
+** NFC
+
+Marvell Easy Connect
+http://www.marvell.com.cn/company/news/pressDetail.do?releaseID=5457
+http://www.eeworld.com.cn/zt/wireless/
