@@ -19,16 +19,19 @@
 
 #+LATEX: \newpage
 
-ISM(Industrial Scientific, and Medical)
-FCC(Federal Communications Committee)
+ISM (Industrial Scientific, and Medical)
+FCC (Federal Communications Committee)
 
 WiMax Wi-Fi 3G LTE
 
-WLAN
-WPAN
+WWAN (Wireless Wide Area Network) IEEE 802.20
+WMAN (Wireless Metropolitan Area Network) IEEE 802.16
+WLAN (Wireless Local Area Networks) IEEE 802.11
+WPAN (Wireless Personal Area Network) IEEE 802.15
+WSN (Wireless Sensor Network)
+WMSN (Wireless Multimedia Sensor Network)
 
-tiaozhi
-
+tiaozhifangshi
 直序扩频（DSSS）、跳频扩频（FHSS）、正交频分复用（OFDM）、高速率直序扩频（HR/DSSS）、红外（TR）、高吞吐（HT OFDM）、超高吞吐（VHT OFDM）。
 zhichi MIMO
 
@@ -60,15 +63,36 @@ zongjie ruxia
 * wuxianduanjutongxunjishu
 ** Wi-Fi (Wireless Fidelity)
 Wi-Fi Direct
+2.4 G gongzuopinlvdaikuan 83.5 MHz
+| Channel | Frequency |
+|       1 | 2412 MHz  |
+|       2 | 2417 MHz  |
+|       3 | 2422 MHz  |
+|       4 | 2427 MHz  |
+|       5 | 2432 MHz  |
+|       6 | 2437 MHz  |
+|       7 | 2442 MHz  |
+|       8 | 2447 MHz  |
+|       9 | 2452 MHz  |
+|      10 | 2457 MHz  |
+|      11 | 2462 MHz  |
+|      12 | 2467 MHz  |
+|      13 | 2472 MHz  |
+
+5 G pinlvfanwei 5.725 GHz ~ 5.850 GHz, 5 channels, each channel has 20MHz bandwidth
+Frequency = 5000 + n * 5(MHz)
+n = 149, 153, 157, 161, 165
+
+
 ** BlueTooth
 BlueTooth 4.0
 Wibree
 ** ZigBee
 http://zh.wikipedia.org/wiki/ZigBee
-** RFID
+** RFID (Radio Frequency Identification)
 ** DSRC
 ** NFC
 
-Marvell Easy Connect
+* Marvell Easy Connect
 http://www.marvell.com.cn/company/news/pressDetail.do?releaseID=5457
 http://www.eeworld.com.cn/zt/wireless/
