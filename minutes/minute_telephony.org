@@ -41,9 +41,23 @@
 - TCM
 
 * DSP (Digital Signal Processing)
+
+http://en.wikipedia.org/wiki/Waveform_viewer
+
+#+BEGIN_SRC shell
+  $ apt-cache search spectrum
+  $ apt-cache search oscilloscope
+  $ apt-cache search waveform
+#+END_SRC
+
+** Asterisk
+http://blog.chinaunix.net/uid-7947787-id-3194117.html
+http://www.aosabook.org/en/asterisk.html
+
 ** SpanDSP
 SpanDSP 是一个传真处理引擎，包含了调制、发送、解调、编码等各种功能。
-Asterisk
+
+http://www.soft-switch.org/spandsp-modules.html
 
 - V.17
  An ITU-T fax protocol that uses TCM modulation at 12 and 14.4 kbit/s.
