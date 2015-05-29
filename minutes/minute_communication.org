@@ -1,0 +1,136 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Communication
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+- 调制
+ http://en.wikipedia.org/wiki/Modulation
+  - 模拟调制
+    - 幅度调制（调幅）(Amplitude modulation, AM）
+      - 双边带调制(Double-sideband modulation, DSB）
+        - Double-sideband modulation with carrier (DSB-WC) (used on the AM radio broadcasting band)
+        - Double-sideband suppressed-carrier transmission (DSB-SC)
+        - Double-sideband reduced carrier transmission (DSB-RC)
+      - 单边带调制（Single-sideband modulation, SSB or SSB-AM）
+        - SSB with carrier (SSB-WC)
+        - SSB suppressed carrier modulation (SSB-SC)
+      - 残余边带调制（Vestigial-sideband modulation, VSB or VSB-AM）
+      - Quadrature amplitude modulation (QAM)
+    - 角度调制（Angle modulation）
+      - 相位调制（调相）（Phase modulation, PM）
+      - 频率调制（调频）(Frequency modulation, FM）
+  - 数字调制
+    - 幅度偏移调制（Amplitude-shift keying, ASK）and its most common form, on-off keying（OOK）
+    - 相位偏移调制（Phase-shift keying, PSK）
+    - 正交幅度调制（Quadrature amplitude modulation, QAM）结合PSK与ASK的方式来作调制
+    - 频率偏移调制（Frequency-shift keying, FSK
+    - audio frequency-shift keying (AFSK)
+    - Minimum-shift keying（MSK）
+    - Gaussian minimum-shift keying（GMSK）
+    - 连续相位调制（Continuous phase modulation, CPM）
+    - 正交频分复用（Orthogonal frequency division multiplexing, OFDM）modulation, also known as discrete multitone (DMT)
+    - Wavelet modulation
+    - Trellis coded modulation (TCM) also known as trellis modulation
+  - 脉冲调制
+    - 脉冲编码调制 Pulse-code modulation（PCM，Analog-over-digital）
+    - 脉冲宽度调制 Pulse-width modulation（PWM，Analog-over-analog）
+    - 脉冲幅度调制 Pulse-amplitude modulation（PAM，Analog-over-analog）
+    - 脉冲位置（相位和频率）调制 Pulse-position modulation(PPM，Analog-over-analog）
+    - 脉冲密度调制 Pulse-density modulation（PDM，Analog-over-analog）
+    - 三角积分调制 Sigma-delta modulation（∑Δ，Analog-over-digital）
+- 解调
+- 信号
+- 载波（Carrier signal, Carrier wave）
+ 指被调制以传输信号的波形，一般为正弦波。一般要求正弦载波的频率远远高于调制信号的带宽，否则会发生混叠，使传输信号失真。
+- 码元 数字脉冲
+- 波特率（Baud）即调制速率
+ In telecommunication and electronics, baud (/ˈbɔːd/, unit symbol Bd) is the
+ unit for symbol rate or modulation rate in symbols per second or pulses per
+ second. It is the number of distinct symbol changes (signaling events) made to
+ the transmission medium per second in a digitally modulated signal or a line
+ code.
+ N mei ge ma yuan fu zai de xin xi liang, R mao bi te lv, bao kuo xin dao bian ma.
+ $f_s = \frac{R}{N}$
+ $R = f_s \log_2(M)$
+- 比特率（Bit rate）
+- 两相调制 四相调制
+- 带宽（Bandwidth）
+- 信道带宽
+- 信噪比
+
+- baseband
+- passband
+
+* Modulation
+* Passband modulation
+** Analog modulation
+- AM
+- FM
+- PM
+- QAM
+- SM
+- SSB
+** Digital modulation
+- ASK
+- APSK
+- CPM
+- FSK
+- MFSK
+- MSK
+- OOK
+- PPM
+- PSK
+- TCM
+
+* DSP (Digital Signal Processing)
+
+http://en.wikipedia.org/wiki/Waveform_viewer
+
+#+BEGIN_SRC shell
+  $ apt-cache search spectrum
+  $ apt-cache search oscilloscope
+  $ apt-cache search waveform
+#+END_SRC
+
+** Asterisk
+http://blog.chinaunix.net/uid-7947787-id-3194117.html
+http://www.aosabook.org/en/asterisk.html
+
+** SpanDSP
+SpanDSP 是一个传真处理引擎，包含了调制、发送、解调、编码等各种功能。
+
+http://www.soft-switch.org/spandsp-modules.html
+
+- V.17
+ An ITU-T fax protocol that uses TCM modulation at 12 and 14.4 kbit/s.
+- V.21
+ An ITU-T recommendation for full-duplex communication between two analogue
+ dial-up modems using audio frequency-shift keying modulation at 300 baud to
+ carry digital data at 300 bit/s. It is a variant of the original Bell 103
+ modulation format.
+- V.27ter
+ An ITU-T recommendation for a half-duplex modem, allowing 2400 and 4800 bit/s (PSK modulation).
+- V.29
+ An ITU-T recommendation for a modem, allowing 4.8 kbit/s, 7.2 kbit/s and 9.6 kbit/s transfer modes (PSK and QAM modulations).
+
+T.30, T.4, HDLC
+T1, E1
+PSTN (Public Switched Telephone Network)
+PLMN (Public Land Mobile Network)
+误码率
