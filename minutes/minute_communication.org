@@ -58,24 +58,56 @@
 - 信号
 - 载波（Carrier signal, Carrier wave）
  指被调制以传输信号的波形，一般为正弦波。一般要求正弦载波的频率远远高于调制信号的带宽，否则会发生混叠，使传输信号失真。
+- 载波频率
 - 码元 数字脉冲
 - 波特率（Baud）即调制速率
+ 波特率，又称调制速率、传符号率（符号又称单位码元），指单位时间内载波参数变化的次数，可以以波形每秒的振荡数来衡量，是信号传输速率的度量。
  In telecommunication and electronics, baud (/ˈbɔːd/, unit symbol Bd) is the
  unit for symbol rate or modulation rate in symbols per second or pulses per
  second. It is the number of distinct symbol changes (signaling events) made to
  the transmission medium per second in a digitally modulated signal or a line
  code.
- N mei ge ma yuan fu zai de xin xi liang, R mao bi te lv, bao kuo xin dao bian ma.
+ N 每个码元负载的信息量， R 秒比特率，包括信道编码。
  $f_s = \frac{R}{N}$
  $R = f_s \log_2(M)$
 - 比特率（Bit rate）
 - 两相调制 四相调制
+- 信道
+- 时隙
 - 带宽（Bandwidth）
+ 带宽，又叫频宽，是数据的传输能力，指单位时间内能够传输的比特数。高带宽意味着高能力。
+ 数字设备中带宽用 bps（b/s）表示，即每秒最高可以传输的位数。
+ 模拟设备中带宽用 Hz 表示，即每秒传送的信号周期数。
+ 通常描述带宽时省略单位，如 10M 实质是 10M b/s 。
+ 带宽计算公式为：带宽 = 时钟频率 * 总线位数 / 8。
+ 电子学上的带宽则指电路可以保持稳定工作的频率范围。
 - 信道带宽
 - 信噪比
+- 时域
+- 频域
+- 采样
+- 时域采样
+- 频谱
+- 频谱混叠
+- 频分多址(frequency division multiple access, FDMA)
+- 多址方式
+- TDMA
+- CDMA
+- GSM
+- GPRS
 
 - baseband
 - passband
+- 低通
+- 带通 band-pass
+- 信噪比 信号噪声功率比
+
+- 曼彻斯特编码
+ 曼彻斯特编码（Manchester Encoding），也叫做相位编码（ Phase Encode，简写PE），
+ 是一个同步时钟编码技术，被物理层使用来编码一个同步位流的时钟和数据。它在以太网
+ 媒介系统中的应用属于数据通信中的两种位同步方法里的自同步法（另一种是外同步法）
+ ，即接收方利用包含有同步信号的特殊编码从信号自身提取同步信号来锁定自己的时钟脉
+ 冲频率，达到同步目的。
 
 * Modulation
 * Passband modulation
