@@ -74,6 +74,16 @@ tools: pavucontrol pavumeter paman veromix
 ** xmms2
 libmac2 to support ape
 ** lxmusic
+** Audio Analysis
+*** din
+*** audacity
+*** qtractor
+*** lmms
+*** ardour
+*** freqtweak
+** Signal Analysis
+*** sigrok
+*** pulseview
 * 邮件 (Mail)
 ** mutt
 ** postfix
