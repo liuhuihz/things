@@ -124,6 +124,11 @@
 - 频域
 - 采样
 - 时域采样
+- 采样窗口
+- 相干采样
+- 非相干采样
+- 频谱泄漏
+- 窗函数
 - 混叠 (Aliasing)
  在信号频谱上可称作叠频；在影像上可称作叠影，主要来自于对连续时间信号作取样以数字化时，取样频率低于两倍奈奎斯特频率。
  在统计、信号处理和相关领域中，混叠是指取样信号被还原成连续信号时产生彼此交叠而失真的现象。
@@ -137,8 +142,25 @@
 - GSM
 - GPRS
 
+- Packet radio 封包无线电
+
 - MARK
 - SPACE
+
+- BER (Bit-Error Rate) 误码率
+
+- 2FSK
+- AFSK
+- CPFSK Continuous-Phase Frequency Shift Keying 连续相位频移键控
+- DPFSK 离散相位频移键控
+
+- 包络 envelope
+- 包络恒定
+- 非线性放大器
+
+- Zero crossing 过零检测
+
+- PLL Phase Locked Loop 锁相回路或锁相环
 
 - SSB 单边带
   - USB 上边带
@@ -148,8 +170,15 @@
 - baseband
 - passband
 - 低通
+- 高通
 - 带通 band-pass
+- 带阻
 - 信噪比 信号噪声功率比
+
+- 截止频率 cutoff frequency
+ https://en.wikipedia.org/wiki/Cutoff_frequency
+ 在物理学和电机工程学中，一个系统的输出信号的能量通常随输入信号的频率发生变化（频率响应）。
+ 截止频率（英语：Cutoff frequency）是指一个系统的输出信号能量开始大幅下降（在带阻滤波器中为大幅上升）的边界频率。
 
 - 波形 (waveform)
  http://en.wikipedia.org/wiki/Waveform
@@ -258,4 +287,34 @@ T.30, T.4, HDLC
 T1, E1
 PSTN (Public Switched Telephone Network)
 PLMN (Public Land Mobile Network)
-误码率
+
+mode-line
+
+误码率(bert)
+
+阻抗
+在具有电阻、电感和电容的电路里，对电路中的电流所起的阻碍作用叫做阻抗。
+阻抗常用 Z 表示，是一个复数，实际称为电阻，虚称为电抗。
+其中电容在电路中对交流电所起的阻碍作用称为容抗，
+电感在电路中对交流电所起的阻碍作用称为感抗，
+电容和电感在电路中对交流电引起的阻碍作用总称为电抗。
+阻抗的单位是欧姆。阻抗的概念不仅存在与电路中，在力学的振动系统中也有涉及。
+
+电功率
+物理学名词，电流在单位时间内做的功叫做电功率。
+是用来表示消耗电能的快慢的物理量，用 P 表示，它的单位是瓦特（ Watt ），简称"瓦"，符号是 W 。
+
+参考电平
+
+dbm0
+相对零参考电平点的绝对参考电平。
+dbov
+
+直接数字式频率合成器（Direct Digital Synthesizer, DDS）
+spandsp/dds.h
+
+DDS int
+src/dds_int.c
+
+DDS float
+src/dds_float.c
