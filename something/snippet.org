@@ -1302,3 +1302,57 @@ transcoding ?
 -b = sampling precision (bits)
 -c = number of channels
 
+* 浮点数
+https://zh.wikipedia.org/wiki/IEEE_754
+IEEE 754 标准中，浮点数表示 (-1)^S*2^E*M 。
+S 是符号位， E 是指数位， M 是有效数字，如同十进制的科学计数法。
+该标准规定了 S E M 所占的二进制位数，比如 float 类型，该标准规定 S 占 1 位， E 占 11 位， M 占 23 位。
+** FPU 浮点运算单元
+80 位， x64 上是 128 位。
+** 尽量使用 double 型
+因为 float 类型进入 FPU 时要扩展成 80 位，会丢失精度。所以下面代码的结果是：
+#+BEGIN_SRC c
+  /* float_fpu.c */
+  #include <stdio.h>
+  #include <float.h>
+  #include <math.h>
+
+  int main()
+  {
+      float f = 0.0f;
+      int i;
+
+      for (i = 0; i < 10; ++ i) {
+          f += 0.1f;
+      }
+      (fabs(f) - 1.0f < FLT_EPSILON) ? printf(" equal \n") : printf("not equal\n");
+
+      return 0;
+  }
+
+#+END_SRC
+#+BEGIN_SRC sh
+  $ gcc -o float_fpu float_fpu.c
+  $ ./float_fpu
+  not equal
+#+END_SRC
+** DBL_EPSILON FLT_EPSILON
+EPSILON 是最小误差。是 EPSILON + X 不等于 X 的最小的正数。使用这两个宏来进行浮点数比较操作。
+
+#+BEGIN_SRC c
+  // float.h
+  #define DBL_EPSILON     2.2204460492503131e-016 /* smallest such that 1.0+DBL_EPSILON != 1.0 */
+  #define FLT_EPSILON     1.192092896e-07F        /* smallest such that 1.0+FLT_EPSILON != 1.0 */
+#+END_SRC
+
+#+BEGIN_SRC c
+  double b = sin(M_PI / 6.0);
+  if (b == 0.5) //错误
+      x++;
+
+  if (fabs(b - 0.5) < DBL_EPSILON) // 正确
+      x++;
+#+END_SRC
+
+另外，我们可以根据自己需要定义这两个宏。
+比如在牵涉到货币的运算中，只需要小数点后面两位的精度就可以了，所以，我们可以把这两个宏定义为 0.001 。

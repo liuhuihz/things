@@ -1,9 +1,9 @@
 # -*- mode: org; coding: utf-8; -*-
 #+OPTIONS: \n:t
 #+OPTIONS: ^:nil
-#+TITLE:	OpenSSL
+#+TITLE:	Security
 #+AUTHOR: Liu Hui
-#+EMAIL: hliu@arcsoft.com
+#+EMAIL: liuhui.hz@gmail.com
 #+LATEX_CLASS: cn-article
 #+LATEX_CLASS_OPTIONS: [9pt,a4paper]
 #+LATEX_HEADER: \usepackage{geometry}
@@ -32,4 +32,8 @@ RSA
 * 摘要
 MD5
 SHA-1
+
+* Tools
+** GnuPG
+** OpenSSL
 
