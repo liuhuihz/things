@@ -120,8 +120,14 @@ Emacs -- auctex
 * 版本控制
 ** rapidsvn
 ** gitg
-* 电子
+* 电子电路 circuit
   oregano
+  fritzing
   gEDA
-  kicad
+  XCircuit
+  TinyCAD
+  Dia
+  Kicad
+  ngspice
+  IsSpice
   PGF/Tikz circuitikz
