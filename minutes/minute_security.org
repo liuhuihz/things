@@ -28,12 +28,97 @@ AES
 RC4
 ** 非对称加密
 RSA
+ECC
 
 * 摘要
 MD5
-SHA-1
+SHA
+DSA
+
+
+* 证书
+** 规范
+*** X.509
+** 格式
+*** PKCS
 
 * Tools
 ** GnuPG
-** OpenSSL
+[[http://futureboy.us/pgp.html][GPG tutorial and PGP Public Key for Alan Eliasen]]
+http://www.oschina.net/translate/pgp-tutorial
+http://www.ruanyifeng.com/blog/2013/07/gpg.html
 
+#+BEGIN_SRC sh
+  $ gpg --version
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ gpg --gen-key
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ gpg --list-keys
+  $ gpg --list-public-keys
+  $ gpg --list-secret-keysc
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ gpg --list-sigs
+#+END_SRC
+
+#+BEGIN_QUOTE
+cipher-algo AES256
+compress-algo ZLIB
+digest-algo SHA512
+s2k-digest-algo SHA512
+#+END_QUOTE
+
+*** ID
+
+*** Key server
+You can send, import your key to an key server.
+
+- send
+  #+BEGIN_SRC sh
+    $ gpg --keyserver name --send-keys key IDs
+  #+END_SRC
+
+- search
+  #+BEGIN_SRC sh
+    $ gpg --keyserver name --search-keys names
+  #+END_SRC
+
+- import
+  #+BEGIN_SRC sh
+    $ gpg --keyserver name --recv-keys key IDs
+  #+END_SRC
+
+If keyserver parameter is not provided, the hkp://keys.gnupg.net will be used.
+- hkp://keys.gnupg.net
+  In fact, the keyserver hkp://keys.gnupg.net uses round robin DNS to give a 
+  different keyserver each time you use it.
+
+** OpenSSL
+#+BEGIN_SRC sh
+  $ openssl list-message-digest-algorithms
+  $ openssl list-cipher-algorithms
+  $ openssl list-public-key-algorithms
+#+END_SRC
+
+*** DSA
+#+BEGIN_SRC sh
+  $ openssl gendsa
+#+END_SRC
+
+*** RSA
+
+#+BEGIN_SRC sh
+  $ openssl genrsa
+#+END_SRC
+
+*** ECC
+
+#+BEGIN_SRC sh
+  $ openssl ecparam
+  $ openssl ecparam -list_curves
+#+END_SRC
