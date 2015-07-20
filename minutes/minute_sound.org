@@ -1,0 +1,78 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Sound
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* OSS
+
+* ESD
+
+* JACK
+
+* PulseAudio
+
+* ALSA
+ALSA is the Advanced Linux Sound Architecture.
+
+#+BEGIN_SRC sh
+$ apt-cache showsrc alsa-lib
+#+END_SRC
+
+[[http://www.ual.es/~vruiz/Docencia/Apuntes/Multimedia/ALSA/][Advanced Linux Sound Architecture (ALSA)]]
+[[http://www.alsa-project.org/~tiwai/writing-an-alsa-driver/][Writing an ALSA Driver]]
+
+** libasound
+
+http://stackoverflow.com/questions/8485553/alsa-tutorial-required
+http://www.linuxjournal.com/article/6735
+http://users.suse.com/~mana/alsa090_howto.html
+http://www.alsa-project.org/main/index.php/FramesPeriods
+http://blog.csdn.net/azloong/article/details/6277457
+http://mysuperbaby.iteye.com/blog/932729
+
+access
+format
+*** 设备名称（ device name ）
+ALSA 库使用逻辑设备名称，而不是使用设备文件。
+设备名称可以是真实硬件设备或者插件（ plugins ）。插件不但提供了对硬件设备的访问，并且可以通过软件提供一些硬件不支持的特性（比如混音等）。
+硬件设备使用格式： hw:i,j ， i 代表卡编号， j 代表卡上的设备。第一个声卡是 hw:0,0 ，别名 default 代表第一个声卡。
+插件使用格式： plughw: 。
+
+*** 帧（ frame ）
+一帧表示一个采样的数据，不论采样位数和声道数目。
+在一个 48kHz 采样的 16 位 PCM 立体声（ stereo ）流里，一帧大小为 4 字节。
+在一个 48kHz 采样的 16 位 PCM 5.1 声道流里，一帧大小为 4 字节。
+frame size
+1 frame = channels * sample_size
+
+*** 时期（ peroid ）
+对应 OSS 中的 fragment ，指触发一个中断需要的帧数。 poll 调用每个时期返回一次。
+chunk_bytes = peroid_size * sample_length / 8
+对于播放（ playback ）来说，
+对于录制（ capture ）来说，
+
+*** 缓冲（ buffer ）
+硬件或驱动的一个 ring buffer ，大于一个 peroid size ，通常是 2 * peroid size 。
+
+*** xrun
+- 过载（ Over run ）
+ 录制过程中
+- 欠载（ Under run ）
+ 播放过程中
+
