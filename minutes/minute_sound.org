@@ -36,6 +36,7 @@ $ apt-cache showsrc alsa-lib
 
 [[http://www.ual.es/~vruiz/Docencia/Apuntes/Multimedia/ALSA/][Advanced Linux Sound Architecture (ALSA)]]
 [[http://www.alsa-project.org/~tiwai/writing-an-alsa-driver/][Writing an ALSA Driver]]
+[[http://www.volkerschatz.com/noise/alsa.html][A close look at ALSA]]
 
 ** libasound
 
@@ -49,15 +50,19 @@ http://mysuperbaby.iteye.com/blog/932729
 access
 format
 *** 设备名称（ device name ）
+http://alsa.opensrc.org/Device
 ALSA 库使用逻辑设备名称，而不是使用设备文件。
-设备名称可以是真实硬件设备或者插件（ plugins ）。插件不但提供了对硬件设备的访问，并且可以通过软件提供一些硬件不支持的特性（比如混音等）。
+格式 "interface:card,device"
+设备名称可以是真实硬件设备或者插件（ plugins ）。插件并不提供了对硬件设备的直接访问，而是通过软件提供一些硬件不支持的特性（比如重采样、混音等）。
 硬件设备使用格式： hw:i,j ， i 代表卡编号， j 代表卡上的设备。第一个声卡是 hw:0,0 ，别名 default 代表第一个声卡。
 插件使用格式： plughw: 。
 
+*** 采样（ sample ）
+
 *** 帧（ frame ）
-一帧表示一个采样的数据，不论采样位数和声道数目。
+一帧表示一个采样点的数据。
 在一个 48kHz 采样的 16 位 PCM 立体声（ stereo ）流里，一帧大小为 4 字节。
-在一个 48kHz 采样的 16 位 PCM 5.1 声道流里，一帧大小为 4 字节。
+在一个 48kHz 采样的 16 位 PCM 5.1 声道流里，一帧大小为 12 字节。
 frame size
 1 frame = channels * sample_size
 
