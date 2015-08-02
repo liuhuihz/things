@@ -1,0 +1,295 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	SpanDSP codes study
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+Based on spandsp 0.0.6
+
+* 源码分析
+** src/dds_int.c
+
+首先，让我们了解以下事实：
+移位操作本质上是乘除操作。左移相当于乘 2 ，右移相当于除 2 。
+
+First, let's clarify a fact, shift operation essentially is multiplication or division.
+Left shift equals to multiply by two, right shift equals to divide by two.
+
+dds_int
+S16 音频数据格式，信号幅度值域 [ -32767, 32767 ] 。
+#+BEGIN_SRC c -n
+  /* In a A-law or u-law channel, a fairly coarse step sine table is adequate to keep the spectral
+     mess due to the DDS at a similar level to the spectral mess due to the A-law or u-law
+     compression. */
+  #define SLENK       8
+  #define DDS_STEPS   (1 << SLENK)
+  #define DDS_SHIFT   (32 - 2 - SLENK)
+
+  /* This is a simple set of direct digital synthesis (DDS) functions to generate sine
+     waves. This version uses a 256 entry sin/cos table to cover one quadrant. */
+
+  static const int16_t sine_table[DDS_STEPS + 1] =
+  {
+           0,
+         201,
+         402,
+  ...
+       32765,
+       32766,
+       32767
+  };
+
+#+END_SRC
+
+- sine_table
+  为了节省计算时间，提高效率，以空间换时间，使用预计算的正弦值表数组。
+  这个数组只保存第一象限的值（ 0 ~ PI/2 ）。其它象限的值可以推导得出。
+
+- SLENK
+  正弦值表数组大小的二进制位数。
+
+- DDS_STEPS
+  正弦值表数组大小。
+
+- DDS_SHIFT
+  32 位值右移移位的位数。保留 SLENK 位对应正弦值表数组精度，保留 2 位对应四个象限。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(int32_t) dds_phase_rate(float frequency)
+  {
+      return (int32_t) (frequency*65536.0f*65536.0f/SAMPLE_RATE);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) dds_frequency(int32_t phase_rate)
+  {
+      return (float) phase_rate*(float) SAMPLE_RATE/(65536.0f*65536.0f);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+- dds_phase_rate
+  给定频率下，计算采样点间的相位差，以波形为单位，乘以 65536.0 * 65536.0 ，是为了在整型表示下保持精度。
+  整型操作比浮点操作效率高。能否直接用 65536 * 65536 呢？
+
+- dds_frequency
+  给定采样点相位差，计算所需的频率。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(int16_t) dds_scaling_dbm0(float level)
+  {
+      return (int16_t) (powf(10.0f, (level - DBM0_MAX_SINE_POWER)/20.0f)*32767.0f);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(int16_t) dds_scaling_dbov(float level)
+  {
+      return (int16_t) (powf(10.0f, (level - DBOV_MAX_SINE_POWER)/20.0f)*32767.0f);
+  }
+  /*- End of function --------------------------------------------------------*/
+#+END_SRC
+
+计算给定分贝水平值对应的信号放大倍数。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(int16_t) dds_lookup(uint32_t phase)
+  {
+      uint32_t step;
+      int16_t amp;
+
+      phase >>= DDS_SHIFT;
+      step = phase & (DDS_STEPS - 1);
+      if ((phase & DDS_STEPS))
+          step = DDS_STEPS - step;
+      amp = sine_table[step];
+      if ((phase & (2*DDS_STEPS)))
+          amp = -amp;
+      return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(int16_t) dds_offset(uint32_t phase_acc, int32_t phase_offset)
+  {
+      return dds_lookup(phase_acc + phase_offset);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(void) dds_advance(uint32_t *phase_acc, int32_t phase_rate)
+  {
+      *phase_acc += phase_rate;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(int16_t) dds(uint32_t *phase_acc, int32_t phase_rate)
+  {
+      int16_t amp;
+
+      amp = dds_lookup(*phase_acc);
+      *phase_acc += phase_rate;
+      return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(int16_t) dds_mod(uint32_t *phase_acc, int32_t phase_rate, int16_t scale, int32_t phase)
+  {
+      int16_t amp;
+
+      amp = (int16_t) (((int32_t) dds_lookup(*phase_acc + phase)*scale) >> 15);
+      *phase_acc += phase_rate;
+      return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+- dds_lookup
+  给定相位值，查找正弦值表中对应的值。
+  首先通过移位，保留 SLENK + 2 位，其中低 SLENK 位用来对应正弦值表数组项的值，高 2 位决定象限。
+
+- dds
+  返回当前相位 phase_acc 的幅度值，并将当前相位增加一个采样的相位差。
+
+- dds_mod
+  返回当前相位 phase_acc 经过 phase 相位调制和 scale 幅度调制后的幅度值。并将当前相位增加一个采样的相位差。
+
+
+** src/dds_float.c
+
+FLOAT 音频数据格式，信号幅度值域 [ -1.0, 1.0 ] 。
+
+#+BEGIN_SRC c -n
+  #define SLENK       11
+  #define SINELEN     (1 << SLENK)
+
+  /* Precreating this table allows it to be in const memory, which might
+     have some performance advantage. */
+  static const float sine_table[SINELEN] =
+  {
+       0.00000000f,
+       0.00306796f,
+       0.00613588f,
+  ...
+       0.99998118f,
+       0.99999529f,
+       1.00000000f,
+       0.99999529f,
+       0.99998118f,
+  ...
+       0.00613588f,
+       0.00306796f,
+       0.00000000f,
+      -0.00306796f,
+      -0.00613588f,
+  ...
+      -0.99998118f,
+      -0.99999529f,
+      -1.00000000f,
+      -0.99999529f,
+      -0.99998118f,
+  ....
+      -0.00920375f,
+      -0.00613588f,
+      -0.00306796f
+  };
+#+END_SRC
+
+- SLENK
+  正弦值表数组大小的二进制位数。
+
+- SINELEN
+  正弦值数组大小。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(float) dds_phase_to_radians(uint32_t phase)
+  {
+      return phase*2.0f*3.1415926f/(65536.0f*65536.0f);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(int32_t) dds_phase_ratef(float frequency)
+  {
+      return (int32_t) (frequency*65536.0f*65536.0f/SAMPLE_RATE);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) dds_frequencyf(int32_t phase_rate)
+  {
+      return (float) phase_rate*(float) SAMPLE_RATE/(65536.0f*65536.0f);
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+- dds_phase_ratef
+  给定频率下，计算采样点间的相位差，以波形为单位，乘以 65536.0 * 65536.0 ，是为了在整型表示下保持精度。
+
+- dds_frequency
+  给定采样点相位差，计算所需的频率。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(float) dds_scaling_dbm0f(float level)
+  {
+      return powf(10.0f, (level - DBM0_MAX_SINE_POWER)/20.0f)*32767.0f;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) dds_scaling_dbovf(float level)
+  {
+      return powf(10.0f, (level - DBOV_MAX_SINE_POWER)/20.0f)*32767.0f;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+计算给定分贝水平值对应的信号放大倍数。
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(void) dds_advancef(uint32_t *phase_acc, int32_t phase_rate)
+  {
+      ,*phase_acc += phase_rate;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) ddsf(uint32_t *phase_acc, int32_t phase_rate)
+  {
+      float amp;
+
+      amp = sine_table[*phase_acc >> (32 - SLENK)];
+      ,*phase_acc += phase_rate;
+      return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) dds_lookupf(uint32_t phase)
+  {
+      return sine_table[phase >> (32 - SLENK)];
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(float) dds_modf(uint32_t *phase_acc, int32_t phase_rate, float scale, int32_t phase)
+  {
+      float amp;
+
+      amp = sine_table[*(phase_acc + phase) >> (32 - SLENK)]*scale;
+      ,*phase_acc += phase_rate;
+      return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
