@@ -1,6 +1,6 @@
 # -*- mode: org; coding: utf-8; -*-
 #+OPTIONS: \n:t
-#+OPTIONS: ^:nil
+#+OPTIONS: ^:{}
 #+TITLE:	SpanDSP codes study
 #+AUTHOR: Liu Hui
 #+EMAIL: liuhui.hz@gmail.com
@@ -289,6 +289,478 @@ FLOAT 音频数据格式，信号幅度值域 [ -1.0, 1.0 ] 。
       amp = sine_table[*(phase_acc + phase) >> (32 - SLENK)]*scale;
       ,*phase_acc += phase_rate;
       return amp;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+** src/spandsp/fsk.h
+#+BEGIN_SRC c -n
+  /*!
+      FSK modem specification. This defines the frequencies, signal levels and
+      baud rate (== bit rate for simple FSK) for a single channel of an FSK modem.
+  ,*/
+  typedef struct
+  {
+      /*! Short text name for the modem. */
+      const char *name;
+      /*! The frequency of the zero bit state, in Hz */
+      int freq_zero;
+      /*! The frequency of the one bit state, in Hz */
+      int freq_one;
+      /*! The transmit power level, in dBm0 */
+      int tx_level;
+      /*! The minimum acceptable receive power level, in dBm0 */
+      int min_level;
+      /*! The bit rate of the modem, in units of 1/100th bps */
+      int baud_rate;
+  } fsk_spec_t;
+
+#+END_SRC
+
+** src/spandsp/private/fsk.h
+#+BEGIN_SRC c -n
+  /*!
+      FSK modem transmit descriptor. This defines the state of a single working
+      instance of an FSK modem transmitter.
+  ,*/
+  struct fsk_tx_state_s
+  {
+      int baud_rate;
+      /*! \brief The callback function used to get the next bit to be transmitted. */
+      get_bit_func_t get_bit;
+      /*! \brief A user specified opaque pointer passed to the get_bit function. */
+      void *get_bit_user_data;
+
+      /*! \brief The callback function used to report modem status changes. */
+      modem_tx_status_func_t status_handler;
+      /*! \brief A user specified opaque pointer passed to the status function. */
+      void *status_user_data;
+
+      int32_t phase_rates[2];
+      int16_t scaling;
+      int32_t current_phase_rate;
+      uint32_t phase_acc;
+      int baud_frac;
+      int shutdown;
+  };
+
+  /*!
+      FSK modem receive descriptor. This defines the state of a single working
+      instance of an FSK modem receiver.
+  ,*/
+  struct fsk_rx_state_s
+  {
+      int baud_rate;
+      /*! \brief Synchronous/asynchronous framing control */
+      int framing_mode;
+      /*! \brief The callback function used to put each bit received. */
+      put_bit_func_t put_bit;
+      /*! \brief A user specified opaque pointer passed to the put_bit routine. */
+      void *put_bit_user_data;
+
+      /*! \brief The callback function used to report modem status changes. */
+      modem_tx_status_func_t status_handler;
+      /*! \brief A user specified opaque pointer passed to the status function. */
+      void *status_user_data;
+
+      int32_t carrier_on_power;
+      int32_t carrier_off_power;
+      power_meter_t power;
+      /*! \brief The value of the last signal sample, using the a simple HPF for signal power estimation. */
+      int16_t last_sample;
+      /*! \brief >0 if a signal above the minimum is present. It may or may not be a V.29 signal. */
+      int signal_present;
+
+      int32_t phase_rate[2];
+      uint32_t phase_acc[2];
+
+      int correlation_span;
+
+      complexi32_t window[2][FSK_MAX_WINDOW_LEN];
+      complexi32_t dot[2];
+      int buf_ptr;
+
+      int frame_state;
+      int frame_bits;
+      int baud_phase;
+      int last_bit;
+      int scaling_shift;
+  };
+
+#+END_SRC
+
+** src/fsk.c
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(int) fsk_tx_restart(fsk_tx_state_t *s, const fsk_spec_t *spec)
+  {
+      s->baud_rate = spec->baud_rate;
+      s->phase_rates[0] = dds_phase_rate((float) spec->freq_zero);
+      s->phase_rates[1] = dds_phase_rate((float) spec->freq_one);
+      s->scaling = dds_scaling_dbm0((float) spec->tx_level);
+      /* Initialise fractional sample baud generation. */
+      s->phase_acc = 0;
+      s->baud_frac = 0;
+      s->current_phase_rate = s->phase_rates[1];
+
+      s->shutdown = FALSE;
+      return 0;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(fsk_tx_state_t *) fsk_tx_init(fsk_tx_state_t *s,
+                                             const fsk_spec_t *spec,
+                                             get_bit_func_t get_bit,
+                                             void *user_data)
+  {
+      if (s == NULL)
+      {
+          if ((s = (fsk_tx_state_t *) malloc(sizeof(*s))) == NULL)
+              return NULL;
+      }
+      memset(s, 0, sizeof(*s));
+
+      s->get_bit = get_bit;
+      s->get_bit_user_data = user_data;
+      fsk_tx_restart(s, spec);
+      return s;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+#+BEGIN_SRC c -n -r
+  SPAN_DECLARE_NONSTD(int) fsk_tx(fsk_tx_state_t *s, int16_t amp[], int len)
+  {
+      int sample;
+      int bit;
+
+      if (s->shutdown)
+          return 0;
+      /* Make the transitions between 0 and 1 phase coherent, but instantaneous
+         jumps. There is currently no interpolation for bauds that end mid-sample.
+         Mainstream users will not care. Some specialist users might have a problem
+         with them, if they care about accurate transition timing. */
+      for (sample = 0;  sample < len;  sample++)
+      {
+          if ((s->baud_frac += s->baud_rate) >= SAMPLE_RATE*100) (ref:samples_per_baud)
+          {
+              s->baud_frac -= SAMPLE_RATE*100;
+              if ((bit = s->get_bit(s->get_bit_user_data)) == SIG_STATUS_END_OF_DATA) (ref:get_bit)
+              {
+                  if (s->status_handler)
+                      s->status_handler(s->status_user_data, SIG_STATUS_END_OF_DATA);
+                  if (s->status_handler)
+                      s->status_handler(s->status_user_data, SIG_STATUS_SHUTDOWN_COMPLETE);
+                  s->shutdown = TRUE;
+                  break;
+              }
+              s->current_phase_rate = s->phase_rates[bit & 1];
+          }
+          amp[sample] = dds_mod(&s->phase_acc, s->current_phase_rate, s->scaling, 0); (ref:phase_coherent)
+      }
+      return sample;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+- fsk_tx
+  调制数据，最多 len 个采样，结果写入至 amp 数组。
+  过程中，从 get_bit 回调中取得需要调制的数据。[[(get_bit)]]
+  信号变化周期的采样数为采样频率（ sample_rate ）除以波特率（ baud ）： $n = S/B$ ，即 $n \times B = S$。[[(samples_per_baud)]]
+  这里使用相位连续调制，所以对所有频率都采用同一个参考值 phase_acc ，并不因调制频率不同而突变。[[(phase_coherent)]]
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE(int) fsk_rx_restart(fsk_rx_state_t *s, const fsk_spec_t *spec, int framing_mode)
+  {
+      int chop;
+
+      s->baud_rate = spec->baud_rate;
+      s->framing_mode = framing_mode;
+      fsk_rx_signal_cutoff(s, (float) spec->min_level);
+
+      /* Detect by correlating against the tones we want, over a period
+         of one baud. The correlation must be quadrature. */
+
+      /* First we need the quadrature tone generators to correlate
+         against. */
+      s->phase_rate[0] = dds_phase_rate((float) spec->freq_zero);
+      s->phase_rate[1] = dds_phase_rate((float) spec->freq_one);
+      s->phase_acc[0] = 0;
+      s->phase_acc[1] = 0;
+      s->last_sample = 0;
+
+      /* The correlation should be over one baud. */
+      s->correlation_span = SAMPLE_RATE*100/spec->baud_rate;
+      /* But limit it for very slow baud rates, so we do not overflow our
+         buffer. */
+      if (s->correlation_span > FSK_MAX_WINDOW_LEN)
+          s->correlation_span = FSK_MAX_WINDOW_LEN;
+
+      /* We need to scale, to avoid overflow in the correlation. */
+      s->scaling_shift = 0;
+      chop = s->correlation_span;
+      while (chop != 0)
+      {
+          s->scaling_shift++;
+          chop >>= 1;
+      }
+
+      /* Initialise the baud/bit rate tracking. */
+      s->baud_phase = 0;
+      s->frame_state = 0;
+      s->frame_bits = 0;
+      s->last_bit = 0;
+
+      /* Initialise a power detector, so sense when a signal is present. */
+      power_meter_init(&s->power, 4);
+      s->signal_present = 0;
+      return 0;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+  SPAN_DECLARE(fsk_rx_state_t *) fsk_rx_init(fsk_rx_state_t *s,
+                                             const fsk_spec_t *spec,
+                                             int framing_mode,
+                                             put_bit_func_t put_bit,
+                                             void *user_data)
+  {
+      if (s == NULL)
+      {
+          if ((s = (fsk_rx_state_t *) malloc(sizeof(*s))) == NULL)
+              return NULL;
+      }
+      memset(s, 0, sizeof(*s));
+
+      s->put_bit = put_bit;
+      s->put_bit_user_data = user_data;
+      fsk_rx_restart(s, spec, framing_mode);
+      return s;
+  }
+  /*- End of function --------------------------------------------------------*/
+
+#+END_SRC
+
+#+BEGIN_SRC c -n
+  SPAN_DECLARE_NONSTD(int) fsk_rx(fsk_rx_state_t *s, const int16_t *amp, int len)
+  {
+      int buf_ptr;
+      int baudstate;
+      int i;
+      int j;
+      int16_t x;
+      int32_t dot;
+      int32_t sum[2];
+      int32_t power;
+      complexi_t ph;
+
+      buf_ptr = s->buf_ptr;
+
+      for (i = 0;  i < len;  i++)
+      {
+          /* The *totally* asynchronous character to character behaviour of these
+             modems, when carrying async. data, seems to force a sample by sample
+             approach. */
+          for (j = 0;  j < 2;  j++)
+          {
+              s->dot[j].re -= s->window[j][buf_ptr].re;
+              s->dot[j].im -= s->window[j][buf_ptr].im;
+
+              ph = dds_complexi(&s->phase_acc[j], s->phase_rate[j]);
+              s->window[j][buf_ptr].re = (ph.re*amp[i]) >> s->scaling_shift;
+              s->window[j][buf_ptr].im = (ph.im*amp[i]) >> s->scaling_shift;
+
+              s->dot[j].re += s->window[j][buf_ptr].re;
+              s->dot[j].im += s->window[j][buf_ptr].im;
+
+              dot = s->dot[j].re >> 15;
+              sum[j] = dot*dot;
+              dot = s->dot[j].im >> 15;
+              sum[j] += dot*dot;
+          }
+          /* If there isn't much signal, don't demodulate - it will only produce
+             useless junk results. */
+          /* There should be no DC in the signal, but sometimes there is.
+             We need to measure the power with the DC blocked, but not using
+             a slow to respond DC blocker. Use the most elementary HPF. */
+          x = amp[i] >> 1;
+          power = power_meter_update(&s->power, x - s->last_sample);
+          s->last_sample = x;
+          if (s->signal_present)
+          {
+              /* Look for power below turn-off threshold to turn the carrier off */
+              if (power < s->carrier_off_power)
+              {
+                  if (--s->signal_present <= 0)
+                  {
+                      /* Count down a short delay, to ensure we push the last
+                         few bits through the filters before stopping. */
+                      report_status_change(s, SIG_STATUS_CARRIER_DOWN);
+                      s->baud_phase = 0;
+                      continue;
+                  }
+              }
+          }
+          else
+          {
+              /* Look for power exceeding turn-on threshold to turn the carrier on */
+              if (power < s->carrier_on_power)
+              {
+                  s->baud_phase = 0;
+                  continue;
+              }
+              if (s->baud_phase < (s->correlation_span >> 1) - 30)
+              {
+                  s->baud_phase++;
+                  continue;
+              }
+              s->signal_present = 1;
+              /* Initialise the baud/bit rate tracking. */
+              s->baud_phase = 0;
+              s->frame_state = 0;
+              s->frame_bits = 0;
+              s->last_bit = 0;
+              report_status_change(s, SIG_STATUS_CARRIER_UP);
+          }
+          /* Non-coherent FSK demodulation by correlation with the target tones
+             over a one baud interval. The slow V.xx specs. are too open ended
+             to allow anything fancier to be used. The dot products are calculated
+             using a sliding window approach, so the compute load is not that great. */
+
+          baudstate = (sum[0] < sum[1]);
+          switch (s->framing_mode)
+          {
+          case FSK_FRAME_MODE_SYNC:
+              /* Synchronous serial operation - e.g. for HDLC */
+              if (s->last_bit != baudstate)
+              {
+                  /* On a transition we check our timing */
+                  s->last_bit = baudstate;
+                  /* For synchronous use (e.g. HDLC channels in FAX modems), nudge
+                     the baud phase gently, trying to keep it centred on the bauds. */
+                  if (s->baud_phase < (SAMPLE_RATE*50))
+                      s->baud_phase += (s->baud_rate >> 3);
+                  else
+                      s->baud_phase -= (s->baud_rate >> 3);
+              }
+              if ((s->baud_phase += s->baud_rate) >= (SAMPLE_RATE*100))
+              {
+                  /* We should be in the middle of a baud now, so report the current
+                     state as the next bit */
+                  s->baud_phase -= (SAMPLE_RATE*100);
+                  s->put_bit(s->put_bit_user_data, baudstate);
+              }
+              break;
+          case FSK_FRAME_MODE_ASYNC:
+              /* Fully asynchronous mode */
+              if (s->last_bit != baudstate)
+              {
+                  /* On a transition we check our timing */
+                  s->last_bit = baudstate;
+                  /* For async. operation, believe transitions completely, and
+                     sample appropriately. This allows instant start on the first
+                     transition. */
+                  /* We must now be about half way to a sampling point. We do not do
+                     any fractional sample estimation of the transitions, so this is
+                     the most accurate baud alignment we can do. */
+                  s->baud_phase = SAMPLE_RATE*50;
+              }
+              if ((s->baud_phase += s->baud_rate) >= (SAMPLE_RATE*100))
+              {
+                  /* We should be in the middle of a baud now, so report the current
+                     state as the next bit */
+                  s->baud_phase -= (SAMPLE_RATE*100);
+                  s->put_bit(s->put_bit_user_data, baudstate);
+              }
+              break;
+          case FSK_FRAME_MODE_5N1_FRAMES:
+          case FSK_FRAME_MODE_7N1_FRAMES:
+          case FSK_FRAME_MODE_7E1_FRAMES:
+          case FSK_FRAME_MODE_7E2_FRAMES:
+          default:
+              /* Gather the specified number of bits, with robust checking to ensure reasonable voice immunity.
+                 The first bit should be a start bit (0), and the last bit should be a stop bit (1) */
+              if (s->frame_state == 0)
+              {
+                  /* Looking for the start of a zero bit, which hopefully the start of a start bit */
+                  if (baudstate == 0)
+                  {
+                      s->baud_phase = SAMPLE_RATE*(100 - 40)/2;
+                      s->frame_state = -1;
+                      s->frame_bits = 0;
+                      s->last_bit = -1;
+                  }
+              }
+              else if (s->frame_state == -1)
+              {
+                  /* Look for a continuous zero from the start of the start bit until
+                     beyond the middle */
+                  if (baudstate != 0)
+                  {
+                      /* If we aren't looking at a stable start bit, restart */
+                      s->frame_state = 0;
+                  }
+                  else
+                  {
+                      s->baud_phase += s->baud_rate;
+                      if (s->baud_phase >= SAMPLE_RATE*100)
+                      {
+                          s->frame_state = 1;
+                          s->last_bit = baudstate;
+                      }
+                  }
+              }
+              else
+              {
+                  s->baud_phase += s->baud_rate;
+                  if (s->baud_phase >= SAMPLE_RATE*(100 - 40))
+                  {
+                      if (s->last_bit < 0)
+                          s->last_bit = baudstate;
+                      /* Look for the bit being consistent over the central 20% of the bit time. */
+                      if (s->last_bit != baudstate)
+                      {
+                          s->frame_state = 0;
+                      }
+                      else if (s->baud_phase >= SAMPLE_RATE*100)
+                      {
+                          /* We should be in the middle of a baud now, so report the current
+                             state as the next bit */
+                          if (s->last_bit == baudstate)
+                          {
+                              if (++s->frame_state > s->framing_mode)
+                              {
+                                  /* Check we have a stop bit and a start bit */
+                                  if (baudstate == 1  &&  (s->frame_bits & 0x02) == 0)
+                                  {
+                                      /* Drop the start bit, and pass the rest back */
+                                      s->put_bit(s->put_bit_user_data, s->frame_bits >> 2);
+                                  }
+                                  s->frame_state = 0;
+                              }
+                              else
+                              {
+                                  s->frame_bits |= (baudstate << s->framing_mode);
+                                  s->frame_bits >>= 1;
+                              }
+                              s->baud_phase -= (SAMPLE_RATE*100);
+                          }
+                          else
+                          {
+                              s->frame_state = 0;
+                          }
+                          s->last_bit = -1;
+                      }
+                  }
+              }
+              break;
+          }
+          if (++buf_ptr >= s->correlation_span)
+              buf_ptr = 0;
+      }
+      s->buf_ptr = buf_ptr;
+      return 0;
   }
   /*- End of function --------------------------------------------------------*/
 
