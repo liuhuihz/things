@@ -260,8 +260,11 @@
 - 傅里叶级数 (Fourier series)
 - 傅里叶变换 (Fourier transform)
   vs ?拉普拉斯变换 ?z 变换
+  一维 二维 三维
   - 离散傅里叶变换 (Discrete Fourier Transform, DFT)
   - 短时傅里叶变换
+  - 快速傅里叶变换 Fast Fourier Transform
+  - 实序列快速傅里叶变换 RFFT
 
 - 小波变换 (Wavelet transform)
   - 离散小波变换（DWT）
@@ -431,3 +434,4 @@ src/dds_int.c
 
 DDS float
 src/dds_float.c
+* Chirp 线性调频脉冲 线性压缩扩频编码

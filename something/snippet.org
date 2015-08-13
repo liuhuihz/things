@@ -1216,9 +1216,20 @@ MTU (Maximum Transmission Unit) 最大传输单元，网络层与数据链路层
 | AH    | Authentication Header              | 认证头               |
 | ESP   | Encapsulating Security Payload     | 封装安全载荷         |
 
+- 隧道模式 tunnel mode
+  用户的整个IP数据包被用来计算 AH 或 ESP 头， AH 或 ESP 头以及 ESP 加密的
+  用户数据被封装在一个新的 IP 数据包中。通常，隧道模式应用在两个安全网关之间的通讯。
+  真正的 IP 地址隐藏，可进行主机或者拓扑隐藏。
+  - 优点
+  - 缺点
+- 传输模式 transport mode
+  只是传输层（ TCP, UDP, ICMP 等）数据被用来计算 AH 或 ESP 头， AH 或 ESP 头
+  以及 ESP 加密的用户数据被放置在原 IP 包头后面。通常，传输模式应用在两台主机之间的
+  通讯，或一台主机和一个安全网关之间的通讯
+  - 优点
+  - 缺点
+
 *** IPsec
-传输模式
-隧道模式
 #+BEGIN_SRC shell
   $ service ipsec start
 #+END_SRC
