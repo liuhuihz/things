@@ -122,3 +122,37 @@ If keyserver parameter is not provided, the hkp://keys.gnupg.net will be used.
   $ openssl ecparam
   $ openssl ecparam -list_curves
 #+END_SRC
+
+* 校验及纠错
+https://en.wikipedia.org/wiki/Error_detection_and_correction
+
+** 校验
+*** CRC （循环冗余校验码 Cyclic Redundancy Check ）
+- 代码多项式结构
+  如果一个 $k$ 位的二进制信息代码多项式为 $M(x)$ ，增加 $(n-k)$ 位的校验码后，信息代码多项式在新的数据块中
+  就表示成 $x^{n-k} M(x)$ ，
+
+- 错误检测原理
+  如果用一个校验码生成多项式 $G(x)$ 去除代码多项式 $M(x)$ ，得到的商式假定为 $Q(x)$ ，余式为 $R(x)$ ：
+  $x^{n-k} \frac{M(x)}{G(x)} = Q(x) + \frac{R(x)}{G(x)}$
+  $x^{n-k} M(x) = Q(x) G(x) + R(x)$
+  因为模 2 多项式的加法和减法运算结果相同，故可把上式写成：
+  $x^{n-k} M(x) + R(x) = Q(x) G(x)$
+  $x^{n-k} M(x) + R(x)$ 代表新的代码多项式，它是能够被校验码生成多项式 $G(x)$ 整除的，即它的余式为 0 。
+**** 生成多项式
+**** 模 2 除法
+
+** 纠错
+https://en.wikipedia.org/wiki/Forward_error_correction#List_of_error-correcting_codes
+
+*** ECC （ Error Checking and Correction ）
+*** BCH
+*** Reed Solomon
+https://en.wikipedia.org/wiki/Reed–Solomon_error_correction
+**** CIRC （ Cross-Interleaved Reed–Solomon Code ）
+https://en.wikipedia.org/wiki/Cross-interleaved_Reed–Solomon_coding
+** 纠删
+https://en.wikipedia.org/wiki/Erasure_codea
+https://en.wikipedia.org/wiki/Forward_error_correction
+纠删码（ Erasure code, EC ）也称前向纠错（ Forward Error Correction ）码。
+纠删码只能容忍数据丢失，无法容忍数据篡改，纠删码正是得名与此。
