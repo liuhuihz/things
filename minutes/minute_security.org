@@ -147,8 +147,25 @@ https://en.wikipedia.org/wiki/Forward_error_correction#List_of_error-correcting_
 
 *** ECC （ Error Checking and Correction ）
 *** BCH
+
 *** Reed Solomon
 https://en.wikipedia.org/wiki/Reed–Solomon_error_correction
+Reed Solomon 算法使用的核心思想：
+- 利用范德蒙德（ Vandermonde ）矩阵，通过数据块计算编码块。
+- 利用高斯（ Gaussian ）消元法，恢复损坏的数据块。
+- 所有运算都是在伽罗华域（ Galios Field ） $GF(2^w)$ 的基础上进行的。
+
+Reed Solomon 算法步骤（ $k + m$ ， $k$ 数据块大小， $m$ 编码块大小，字长为 $w$ ）:
+1) 选择一个合适的字长，保证 $2^w > k + m$ 。
+2) 构造 $GF(2^w)$ 上的对数表 $gflog$ 和反对数表 $gfilog$ 。
+3) 取 $m \times k$ 的范德蒙德矩阵 $F$ ，其中 $F_{i,j} = j^{i - 1}, (1 <= i <= m, 1 <= j <= k)$ 。
+4) 用 $F$ 去按字（ $w$ ）乘数据块，得到对应的编码块 $FD = C$ 。
+5) 如果 $e(e <= m)$ 块数据损坏，可以通过下面的方式恢复：
+  $A = \begin{bmatrix}I\\F\end{bmatrix}, E = \begin{bmatrix}D\\C\end{bmatrix}$
+  我们知道 $AD = E$ ，在 $A$ 和 $E$ 中消去坏块对应的行，得到 $A'$ ， $E'$ ，满足 $A'D = E'$ 。
+  通过高斯消元法，便可以解出 $D$ 。另外如果是编码块中有坏块，可以直接通过 $AD = E$ 算出对应的坏块。
+
+
 **** CIRC （ Cross-Interleaved Reed–Solomon Code ）
 https://en.wikipedia.org/wiki/Cross-interleaved_Reed–Solomon_coding
 ** 纠删
