@@ -21,12 +21,53 @@
 
 ffmpeg.org
 
+https://en.wikibooks.org/wiki/MeGUI/x264_Settings
+
 #+BEGIN_SRC sh
   $ ffmpeg -h full
   $ ffmpeg -formats
   $ ffmpeg -decodes
   $ ffmpeg -encodes
 #+END_SRC
+
+- Media information
+  #+BEGIN_SRC sh
+    $ ffprobe -show_streams -i test.mp4
+    $ ffprobe -v quiet -print_format json -show_format -i test.mp3
+  #+END_SRC
+
+- Scaling (Resizing)
+  #+BEGIN_SRC sh
+    $ ffmpeg -i input.jpg -vf scale=320:240 output_320x240.png
+    $ ffmpeg -i input.jpg -vf scale=320:-1 output_320.png
+    $ ffmpeg -i input.jpg -vf scale=iw*2:ih input_double_width.png
+    $ ffmpeg -i input.jpg -vf scale="'if(gt(a,4/3),320,-1)':'if(gt(a,4/3),-1,240)'" output_320x240_boxed.png
+  #+END_SRC
+
+- Export images from video.
+  #+BEGIN_SRC sh
+    $ ffmpeg -i test.mp4 -an -ss 00:07:52.730 -f image2 -vframes 10 abc-%03d.png
+    $ ffmpeg -i test.mp4 -an -ss 00:07:52.730 -f image2 -t 2 abc-%03d.png
+    $ ffmpeg -i test.mp4 -an -ss 00:07:52.730 -f image2 -t 2 -vf scale=320:240 abc-%03d.png
+  #+END_SRC
+
+- Create video from image
+  #+BEGIN_SRC sh
+    $ ffmpeg -f image2 -i image%d.jpg output.mpg
+    $ ffmpeg -f image2 -i "input_%05d.jpeg" -r 25 output.mov
+    $ ffmpeg -f image2 -r 29.97 -i "input_%05d.jpeg" -profile:v high -level:v 4.1 -aspect 16:9 -r 29.97 -refs:v 3 -pix_fmt yuv420p output.mp4
+    # x264 opts (scan type: MBAFF >>> -flags +ildct+ilme -x264opts tff=1)
+    $ ffmpeg -f image2 -r 29.97 -i "input_%05d.jpeg" -pix_fmt yuv420p -refs 3 -bf 3 -flags +ildct+ilme -x264opts tff=1:b-pyramid=0 output.mp4
+    $ ffmpeg -f image2 -r 29.97 -i abc_%03d.png -pix_fmt yuv420p -refs 3 -bf 3 -b:v 1000k -minrate 1000k -maxrate 1000k -bufsize 1000k -flags +ildct+ilme -x264opts tff=1:b-pyramid=0:colorprim=bt709:transfer=bt709:colormatrix=bt709:videoformat=ntsc out.mp4
+  #+END_SRC
+
+- x264 options
+  http://www.front2end.cn/blog/Chinese-explanation-of-x264-parameters-(X264-Settings).html
+  http://www.elesos.com/index.php?title=FFmpeg_X264编码指南
+
+  #+BEGIN_SRC sh
+    $ ffmpeg -y -i c:\c0044.mxf -c:v libx264 -profile:v high422 -level:v 4.1 -g 33 -bf 1 -crf 20 -flags +ildct+ilme -top 1 -x264opts tff=1:colorprim=bt709:transfer=bt709:colormatrix=bt709 -filter_complex crop=out_h=1080:y=0,scale=interl=1:in_range=tv:out_range=tv -pix_fmt yuv422p -c:a ac3 -b:a 256k -aspect 16:9 c:\c0044.mp4
+  #+END_SRC
 
 directshow v4l avfoundation
 
