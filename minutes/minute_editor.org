@@ -1,0 +1,142 @@
+# -*- mode: org; coding: utf-8; -*-
+#+OPTIONS: \n:t
+#+OPTIONS: ^:nil
+#+TITLE:	Editor
+#+AUTHOR: Liu Hui
+#+EMAIL: liuhui.hz@gmail.com
+#+LATEX_CLASS: cn-article
+#+LATEX_CLASS_OPTIONS: [9pt,a4paper]
+#+LATEX_HEADER: \usepackage{geometry}
+#+LATEX_HEADER: \geometry{top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm}
+#+latex_header: \makeatletter
+#+latex_header: \renewcommand{\@maketitle}{
+#+latex_header: \newpage
+#+latex_header: \begin{center}%
+#+latex_header: {\Huge\bfseries \@title \par}%
+#+latex_header: \end{center}%
+#+latex_header: \par}
+#+latex_header: \makeatother
+
+#+LATEX: \newpage
+
+* Line editor
+** ed
+
+* Stream editor
+** sed
+
+|------------------------------------+---------|
+| parameter                          | comment |
+|------------------------------------+---------|
+| -n, --quite, --silent              |         |
+| -e script, --expression=script     |         |
+| -f script-file, --file=script-file |         |
+| -i[SUFFIX], --in-place[=SUFFIX]    |         |
+|------------------------------------+---------|
+
+
+*** 模式空间（ pattern space ）和保持空间（ hold space ）
+
+#+BEGIN_SRC ditaa :file ps_and_hs.png :cmdline -r -s 0.9
+       +----------+ edit +----------+   input +----------+ compile +----------+
+       | refined  |<-----+ h,cpp    +-------->+ compiler,+-------->+Executable|
+       |   h,cpp  |      |          |         | linker   |         |   File   |
+       +----------+      +----+-----+         +----------+         +----------+
+                              | input
+                              v
+                         +----------+
+                         | doxygen  |
+                         |          |
+                         +----+-----+
+                              | process
+                              v
+                         +----------+
+                         | Doxgen   |
+                         | Document |
+                         +----------+
+#+END_SRC
+
+*** Sample
+#+BEGIN_SRC sh
+$ cat test.txt
+AAA
+BBB
+CCC
+DDD
+EEE
+FFF
+GGG
+HHH
+III
+JJJ
+KKK
+LLL
+MMM
+NNN
+OOO
+PPP
+QQQ
+RRR
+SSS
+TTT
+
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ sed -n '/server/{h;b};H;${g;p}' file
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ sed -i '/server/{:a;N;/\nserver/!ba;s/.*\n//}' file
+#+END_SRC
+
+Extract lines frmo 'MMM' to 'OOO'.
+#+BEGIN_SRC sh
+  $ sed -n '/MMM/,/OOO/p' test.txt
+  # in-place version
+  $ sed -i '/MMM/,/OOO/p;d' test.txt
+#+END_SRC
+
+Delete lines from '13' to '15'.
+#+BEGIN_SRC sh
+  $ sed -n '/MMM/,/OOO/b;p' test.txt
+  $ sed -n '/MMM/{:a;n;/OOO/!ba;b};p' test.txt
+  # in-place version
+  $ sed -i '/MMM/,/OOO/d' test.txt
+#+END_SRC
+
+Replace lines from '13' to '15' with 'relpace text'.
+#+BEGIN_SRC sh
+  $ sed -n '/13/{:a;n;/15/!ba;br};p;b;:r;c\replace text' test.txt
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ sed -i -rn '/server/,/server/{G;s/server\n.+//;ta;;s/(.*)\n(.*)/\1/;p;h;:a}' file
+#+END_SRC
+
+
+*** BSD variant
+
+The in-place option should be followed a suffix argument for backing up the original file.
+If you don't want the backup, you should provide a empty suffix string explicitly.
+#+BEGIN_SRC sh
+  $ sed -i '.bak' 's/MMM/OOO/' test.txt
+  # Without backup
+  $ sed -i '' 's/MMM/OOO/' test.txt
+#+END_SRC
+
+As opposed, GNU sed use "-i" without argument or "-i''" (there is no space before the empty string).
+#+BEGIN_SRC sh
+  $ sed -i 's/MMM/OOO/' test.txt
+  $ sed -i'' 's/MMM/OOO/' test.txt
+#+END_SRC
+
+** awk
+
+#+BEGIN_SRC sh
+  $ awk '{if($0=="server"){delete a;a[i=0]=$0}else{a[++i]=$0}}END{for(j in a)print a[j]>FILENAME}' file
+#+END_SRC
+
+#+BEGIN_SRC sh
+  $ awk 'BEGIN{RS="server"}END{print RS,$0}' file
+#+END_SRC
