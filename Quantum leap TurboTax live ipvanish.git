@@ -1,0 +1,211 @@
+Skip to content
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+
+cad desk sh complete
+Repositories0
+Code15K
+Commits0
+Issues1
+Marketplace0
+Topics0
+Wikis3
+Users0
+Language
+
+Sort
+
+15,223 code results
+@liuhuihz
+liuhuihz/things – living_in_linux.org
+Showing the top four matches
+Last indexed on Jun 27, 2018
+Org
+tint2
+** fvwm
+* 编辑器 (Editor)
+** emacs
+需要的包
+*** Complete
+**** Minibuffer complete & Buffer complete
+***** InteractivelyDoThings (IDO)
+***** Icicles
+***** Helm (a.k.a Anything)
+**** Code complete
+***** Company
+@swindonmakers
+swindonmakers/snhack.github.io – atom.xml
+Showing the top seven matches
+Last indexed on Jun 26, 2018
+XML
+cad.lcd.set_cursor(5,1)
+cad.lcd.write(“Complete”)</p>
+
+<p>sh = p.LCDBitmap([3,7,14,12,24,24,31,31])
+cad.lcd.store_custom_bitmap(0, sh)
+sh = p.LCDBitmap([31,31,0,27,27,27,31,31])
+cad.lcd.store_custom_bitmap(1, sh)
+@x19290-not4u
+x19290-not4u/thinkgnudistribution – tga09
+Showing the top four matches
+Last indexed on Jul 5, 2018
+　IBM タイプライタの対抗機種でバトミントン・プリンタと呼ばれる NEC 製のものがあった。タイプライタの印字幅は全て同一である。
+</ul>
+
+(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ
+　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。
+.sp
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+@x19290-not4u
+x19290-not4u/thinkgnudistribution – tga09.txt
+Showing the top four matches
+Last indexed on Jul 5, 2018
+Text
+　IBM タイプライタの対抗機種でバトミントン・プリンタと呼ばれる NEC 製のものがあった。タイプライタの印字幅は全て同一である。
+
+(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ
+　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+This man page is an extract of the documentation of the
+@x19290-not4u
+x19290-not4u/thinkgnudistribution – tga09
+Showing the top four matches
+Last indexed on Jul 5, 2018
+　IBM タイプライタの対抗機種でバトミントン・プリンタと呼ばれる NEC 製のものがあった。タイプライタの印字幅は全て同一である。
+
+(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ
+　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+This man page is an extract of the documentation of the
+@wonderer007
+wonderer007/Search-Engine – 3943
+Showing the top 12 matches
+Last indexed on Jun 28, 2018
+Cable Technician
+Cad Designer
+Cad Drafter
+Cad Draftsman
+Cad Engineer
+Cad Manager
+Cad Operator
+Cad Technician
+Design Engineer
+Design Instructor
+Desk Agent
+Desk Clerk
+Desk Manager
+Desk Receptionist
+Desk Representative
+@gelinger777
+gelinger777/Wpier – index.js
+Showing the top three matches
+Last indexed on Jun 25, 2018
+JavaScript
+	   var DeskTopPanels=[new Ext.DataView({
+			            id:'desktop-view',
+			            region:(_VENDOR_CHANEL==''? 'center':'north'),
+			// от производителя дистрибутива
+			DeskTopPanels[DeskTopPanels.length]=VendorRssPanel;
+		}
+
+       tabs = new Ext.TabPanel({
+@thinkgnudistribution
+thinkgnudistribution/broken – tga09.html
+Showing the top four matches
+Last indexed on Jul 5, 2018
+HTML
+</ul>
+
+<p>(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ</p>
+<p>　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。</p>
+<p>　1975 年当時、写植機の代わりになるプリンタはこれぐらいしかなかった。<a href="#r.a">★1</a>UCB でこの作業を行ない、BSD Unix には troff をこれ用に修正した vtroff<a href="#n.c">*1</a> が入っていた。<a href="#r.b">★2</a></p>
+.de BP
+.sp
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+@x19290-not4u
+x19290-not4u/thinkgnudistribution – tga09.html
+Showing the top four matches
+Last indexed on Jul 5, 2018
+HTML
+</ul>
+
+<p>(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ</p>
+<p>　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。</p>
+<p>　1975 年当時、写植機の代わりになるプリンタはこれぐらいしかなかった。<a href="#r.a">★1</a>UCB でこの作業を行ない、BSD Unix には troff をこれ用に修正した vtroff<a href="#n.c">*1</a> が入っていた。<a href="#r.b">★2</a></p>
+.de BP
+.sp
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+@x19290-not4u
+x19290-not4u/thinkgnudistribution – tga09.html
+Showing the top four matches
+Last indexed on Jul 5, 2018
+HTML
+</ul>
+
+<p>(3). 特定の清書システムと特定の出力装置をエミュレートするドライバ</p>
+<p>　例えば、troff と写植機の代わりの出力装置としてバーサテックという CAD 用の静電プリンタを使うようにしたものがある。</p>
+<p>　1975 年当時、写植機の代わりになるプリンタはこれぐらいしかなかった。<a href="#r.a">★1</a>UCB でこの作業を行ない、BSD Unix には troff をこれ用に修正した vtroff<a href="#n.c">*1</a> が入っていた。<a href="#r.b">★2</a></p>
+.de BP
+.sp
+.ti-.2i
+\(**
+..
+.SH NAME
+gcc\-GNU project C Compiler
+.SH SYNOPSIS
+.B gcc
+[options]files
+.SH WARNING
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
